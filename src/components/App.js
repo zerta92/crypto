@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import logo from '../logo.png';
-import './App.css';
+import React, { Component } from "react";
+import logo from "../logo.png";
+import "./App.css";
 
 class App extends Component {
   render() {
@@ -13,7 +13,7 @@ class App extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Dapp University
+            Fuckboy University
           </a>
         </nav>
         <div className="container-fluid mt-5">
@@ -27,7 +27,7 @@ class App extends Component {
                 >
                   <img src={logo} className="App-logo" alt="logo" />
                 </a>
-                <h1>Dapp University Starter Kit</h1>
+                <h1>Fuck Boy University Starter Kit</h1>
                 <p>
                   Edit <code>src/components/App.js</code> and save to reload.
                 </p>
@@ -37,7 +37,10 @@ class App extends Component {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  LEARN BLOCKCHAIN <u><b>NOW! </b></u>
+                  LEARN BLOCKCHAIN{" "}
+                  <u>
+                    <b>NOW! </b>
+                  </u>
                 </a>
               </div>
             </main>
