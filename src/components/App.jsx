@@ -3,6 +3,8 @@ import Web3 from "web3";
 import logo from "../logo.png";
 import "./App.css";
 import Navbar from "./Navbar";
+import SocialNetwork from '../abis/SocialNetwork.json'
+
 
 class App extends Component {
   constructor(props) {
@@ -26,8 +28,25 @@ class App extends Component {
   async loadBlockchainData() {
     const web3 = window.web3;
     const accounts = await web3.eth.getAccounts();
-    console.log(accounts[0]);
-    this.setState({ account: accounts[0] });
+    console.log(accounts);
+
+    this.setState({ account: accounts[0],socialNetwork:null,posts:[] });
+
+    const networkId =  await new web3.eth.net.getId()
+    const networkData = SocialNetwork.networks[networkId]
+    if(networkData){
+      const socialNetwork = web3.eth.Contract(SocialNetwork.abi, networkData.address)
+      this.setState({socialNetwork})
+      const postCount = await socialNetwork.methods.postsCount().call()
+      for (let i = 1;i<=postCount;i++){
+        const post = await socialNetwork.methods.posts(i).call()
+        this.setState({posts:[...this.state.posts,post]})
+      }
+      console.log({posts:this.state.posts});
+    }else{
+      window.alert('SocialNetwork contract has not deployed to the network.')
+    }
+
   }
 
   async componentWillMount() {

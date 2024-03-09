@@ -19,6 +19,7 @@ class Navbar extends Component {
               <small id="account">{this.props.account}</small>
               {this.props.account ? (
                 <img
+                  alt=""
                   className="ml-2"
                   height="30"
                   width="30"

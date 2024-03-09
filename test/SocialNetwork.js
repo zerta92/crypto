@@ -6,6 +6,8 @@ require("chai")
   .should();
 
 contract("SocialNetwork", ([deployer, author, tipper]) => {
+  console.log({ deployer, author, tipper });
+
   let socialNetwork;
 
   before(async () => {
