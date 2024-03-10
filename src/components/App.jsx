@@ -17,6 +17,7 @@ class App extends Component {
     };
 
     this.createPost = this.createPost.bind(this);
+    this.tipPost = this.tipPost.bind(this);
   }
 
   async loadWeb3() {
@@ -56,7 +57,9 @@ class App extends Component {
         const post = await socialNetwork.methods.posts(i).call();
         this.setState({ posts: [...this.state.posts, post] });
       }
-
+      this.setState({
+        posts: this.state.posts.sort((a, b) => b.tipAmount - a.tipAmount),
+      });
       this.setState({ loading: false });
     } else {
       window.alert("SocialNetwork contract has not deployed to the network.");
@@ -65,15 +68,22 @@ class App extends Component {
 
   createPost(content) {
     this.setState({ loading: true });
-    console.log("started: ", this.state.account);
     this.state.socialNetwork.methods
       .createPost(content)
       .send({ from: this.state.account })
-      .on("confirmation", function(confirmationNumber, receipt) {
-        console.log({ receipt });
-      })
+      .on("confirmation", function(confirmationNumber, receipt) {})
       .on("receipt", (receipt) => {
-        console.log(receipt);
+        this.setState({ loading: false });
+      });
+  }
+
+  tipPost(id, tipAmount) {
+    this.setState({ loading: true });
+    this.state.socialNetwork.methods
+      .tipPost(id)
+      .send({ from: this.state.account, value: tipAmount })
+      .on("confirmation", function(confirmationNumber, receipt) {})
+      .on("receipt", (receipt) => {
         this.setState({ loading: false });
       });
   }

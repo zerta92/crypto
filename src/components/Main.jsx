@@ -74,7 +74,6 @@ class Main extends Component {
                               "0.1",
                               "Ether"
                             );
-                            console.log(event.target.name, tipAmount);
                             this.props.tipPost(event.target.name, tipAmount);
                           }}
                         >
