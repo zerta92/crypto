@@ -2,4 +2,10 @@
  # Run `nodejs {{filename}}.js` to compile with the solc node library 
 
 
-//Skipping metamask.io chrome extension for now
+# To Create a Post
+1. open truffle console 
+    `cmd: truffle console`
+2. init SocialNetwork Contract
+    `socialNetwork = await SocialNetwork.deployed()`
+3. create a post
+   ` await socialNetwork.createPost('post content')`
