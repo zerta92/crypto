@@ -4,8 +4,8 @@
 ### Run `truffle migrate --reset` to run migrations and deploy smart contract to the EVM
 
 
-### Truffle commands
-### To Create a Post
+## Truffle commands
+### To Create a Post from the terminal
 1. open truffle console 
     `cmd: truffle console`
 2. init SocialNetwork Contract
