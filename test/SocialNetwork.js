@@ -54,6 +54,7 @@ contract("SocialNetwork", ([deployer, author, tipper]) => {
         from: author,
       }).should.be.rejected;
     });
+
     it("lists a post", async () => {
       const post = await socialNetwork.posts(postsCount);
       assert.equal(post.id.toNumber(), postsCount.toNumber(), "id is correct");
@@ -103,6 +104,18 @@ contract("SocialNetwork", ([deployer, author, tipper]) => {
         from: tipper,
         value: web3.utils.toWei("1", "Ether"),
       }).should.be.rejected;
+    });
+
+    it("deletes a post", async () => {
+      // result = await socialNetwork.deletePost(1, {
+      //   from: author,
+      // });
+      // const event = result.logs[0].args;
+      // assert.equal(
+      //   event.postsCount.toNumber(),
+      //   postsCount.toNumber() - 1,
+      //   "id is correct"
+      // );
     });
   });
 });

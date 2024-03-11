@@ -51,7 +51,7 @@ class Main extends Component {
                           30
                         ).toString()}`}
                       />
-                      <small className="text-muted">{post.author}</small>
+                      {/* <small className="text-muted">{post.author}</small> */}
                     </div>
                     <ul id="postList" className="list-group list-group-flush">
                       <li className="list-group-item">
@@ -79,6 +79,19 @@ class Main extends Component {
                         >
                           TIP 0.1 ETH
                         </button>
+                        {this.props.account === post.author ? (
+                          <button
+                            className="btn btn-link btn-sm float-right pt-0"
+                            name={post.id}
+                            onClick={(event) => {
+                              this.props.deletePost(event.target.name);
+                            }}
+                          >
+                            DELETE POST
+                          </button>
+                        ) : (
+                          <div></div>
+                        )}
                       </li>
                     </ul>
                   </div>

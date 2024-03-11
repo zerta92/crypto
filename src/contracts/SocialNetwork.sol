@@ -11,6 +11,7 @@ contract SocialNetwork {
         string content;
         uint tipAmount;
         address payable author;
+        bool deleted;
     }
 
     event PostCreated(
@@ -26,6 +27,8 @@ contract SocialNetwork {
         address payable author
     );
 
+    event PostDeleted(uint postsCount, address payable author);
+
     constructor() public {
         name = "Fuck Boy University Social Network";
     }
@@ -33,8 +36,22 @@ contract SocialNetwork {
     function createPost(string memory _content) public {
         require(bytes(_content).length > 0);
         postsCount++;
-        posts[postsCount] = Post(postsCount, _content, 0, msg.sender);
+        posts[postsCount] = Post(postsCount, _content, 0, msg.sender, false);
         emit PostCreated(postsCount, _content, 0, msg.sender);
+    }
+
+    function deletePost(uint _postId) public {
+        require(_postId > 0 && _postId <= postsCount, "Invalid post ID");
+
+        require(
+            msg.sender == posts[_postId].author,
+            "You are not the owner of this post"
+        );
+
+        posts[_postId].content = "";
+        posts[_postId].deleted = true;
+
+        emit PostDeleted(postsCount, posts[_postId].author);
     }
 
     function tipPost(uint _id) public payable {

@@ -14,10 +14,12 @@ class App extends Component {
       postCount: 0,
       posts: [],
       loading: true,
+      error: false,
     };
 
     this.createPost = this.createPost.bind(this);
     this.tipPost = this.tipPost.bind(this);
+    this.deletePost = this.deletePost.bind(this);
   }
 
   async loadWeb3() {
@@ -36,6 +38,29 @@ class App extends Component {
     }
   }
 
+  async loadPosts() {
+    const postCount = await this.state.socialNetwork.methods
+      .postsCount()
+      .call();
+
+    this.setState({ postCount });
+    for (let i = 1; i <= postCount; i++) {
+      const post = await this.state.socialNetwork.methods.posts(i).call();
+      const isInPosts = this.state.posts.find(
+        (post_) => post_.id.toNumber() === post.id.toNumber()
+      );
+
+      if (!isInPosts) {
+        this.setState({ posts: [...this.state.posts, post] });
+      }
+    }
+    this.setState({
+      posts: this.state.posts
+        .filter((post) => !post.deleted)
+        .sort((a, b) => b.tipAmount - a.tipAmount),
+    });
+  }
+
   async loadBlockchainData() {
     const web3 = window.web3;
     const accounts = await web3.eth.getAccounts();
@@ -51,15 +76,9 @@ class App extends Component {
       );
 
       this.setState({ socialNetwork });
-      const postCount = await socialNetwork.methods.postsCount().call();
-      this.setState({ postCount });
-      for (let i = 1; i <= postCount; i++) {
-        const post = await socialNetwork.methods.posts(i).call();
-        this.setState({ posts: [...this.state.posts, post] });
-      }
-      this.setState({
-        posts: this.state.posts.sort((a, b) => b.tipAmount - a.tipAmount),
-      });
+
+      await this.loadPosts();
+
       this.setState({ loading: false });
     } else {
       window.alert("SocialNetwork contract has not deployed to the network.");
@@ -72,8 +91,15 @@ class App extends Component {
       .createPost(content)
       .send({ from: this.state.account })
       .on("confirmation", function(confirmationNumber, receipt) {})
-      .on("receipt", (receipt) => {
-        this.setState({ loading: false });
+      .on("receipt", async (receipt) => {
+        await this.loadPosts();
+
+        this.setState({
+          loading: false,
+        });
+      })
+      .on("error", function(error) {
+        this.setState({ error: true, loading: false });
       });
   }
 
@@ -85,6 +111,28 @@ class App extends Component {
       .on("confirmation", function(confirmationNumber, receipt) {})
       .on("receipt", (receipt) => {
         this.setState({ loading: false });
+      })
+      .on("error", function(error) {
+        this.setState({ error: true, loading: false });
+      });
+  }
+
+  deletePost(id) {
+    this.setState({ loading: true });
+    this.state.socialNetwork.methods
+      .deletePost(id)
+      .send({ from: this.state.account })
+      .on("confirmation", function(confirmationNumber, receipt) {})
+      .on("receipt", (receipt) => {
+        this.setState({
+          loading: false,
+          posts: this.state.posts.filter((post) => {
+            return post.id.toNumber() !== +id;
+          }),
+        });
+      })
+      .on("error", function(error) {
+        this.setState({ error: true, loading: false });
       });
   }
 
@@ -106,6 +154,8 @@ class App extends Component {
             posts={this.state.posts}
             createPost={this.createPost}
             tipPost={this.tipPost}
+            deletePost={this.deletePost}
+            account={this.state.account}
           />
         )}
       </div>
