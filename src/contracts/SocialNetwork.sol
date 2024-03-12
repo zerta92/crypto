@@ -48,7 +48,6 @@ contract SocialNetwork {
             "You are not the owner of this post"
         );
 
-        posts[_postId].content = "";
         posts[_postId].deleted = true;
 
         emit PostDeleted(postsCount, posts[_postId].author);

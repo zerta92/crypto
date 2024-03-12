@@ -46,6 +46,7 @@ class App extends Component {
     this.setState({ postCount });
     for (let i = 1; i <= postCount; i++) {
       const post = await this.state.socialNetwork.methods.posts(i).call();
+
       const isInPosts = this.state.posts.find(
         (post_) => post_.id.toNumber() === post.id.toNumber()
       );
