@@ -58,48 +58,6 @@ function App() {
     }
   }
 
-  async function loadPosts() {
-    const postCount = await socialNetwork.methods.postsCount().call();
-
-    setPostCount(postCount);
-    const allPosts = [];
-    for (let i = 1; i <= postCount; i++) {
-      const post = await socialNetwork.methods.posts(i).call();
-
-      const isInPosts = posts.find(
-        (post_) => post_.id.toNumber() === post.id.toNumber()
-      );
-
-      if (!isInPosts) {
-        allPosts.push(post);
-      }
-    }
-    setPosts(
-      allPosts
-        .filter((post) => !post.deleted)
-        .sort((a, b) => b.tipAmount - a.tipAmount)
-    );
-  }
-
-  async function loadTransactions() {
-    const transactionsCount = await cryptoTransactions.methods
-      .transactionsCount()
-      .call();
-
-    setTransactionsCount(transactionsCount);
-    const allPosts = [];
-    for (let i = 1; i <= transactionsCount; i++) {
-      const post = await cryptoTransactions.methods.transactions(i).call();
-
-      allPosts.push(post);
-    }
-    setTransactions(
-      allPosts
-        .filter((_transaction) => !_transaction.deleted)
-        .sort((a, b) => b.transactionDate - a.transactionDate)
-    );
-  }
-
   async function loadBlockchainData() {
     const web3 = window.web3;
     const accounts = await web3.eth.getAccounts();
@@ -133,6 +91,70 @@ function App() {
     } else {
       window.alert("SocialNetwork contract has not deployed to the network.");
     }
+  }
+
+  /* CryptoTransactions */
+  async function loadTransactions() {
+    const transactionsCount = await cryptoTransactions.methods
+      .transactionsCount()
+      .call();
+
+    setTransactionsCount(transactionsCount);
+    const allTransactions = [];
+    for (let i = 1; i <= transactionsCount; i++) {
+      const post = await cryptoTransactions.methods.transactions(i).call();
+
+      allTransactions.push(post);
+    }
+    setTransactions(
+      allTransactions
+        .filter((_transaction) => !_transaction.deleted)
+        .sort((a, b) => b.transactionDate - a.transactionDate)
+    );
+  }
+
+  function createTransaction({ type, amount, transactionDate }) {
+    console.log({ type, amount, transactionDate });
+
+    const rate = 1.23 * 1000;
+    setLoading(true);
+    cryptoTransactions.methods
+      .createTransaction(type, amount, transactionDate, rate)
+      .send({ from: account })
+      .on("confirmation", function(confirmationNumber, receipt) {})
+      .on("receipt", async (receipt) => {
+        await loadPosts();
+
+        setLoading(false);
+      })
+      .on("error", function(error) {
+        setLoading(false);
+        setError(true);
+      });
+  }
+
+  /* SocialNetwork */
+  async function loadPosts() {
+    const postCount = await socialNetwork.methods.postsCount().call();
+
+    setPostCount(postCount);
+    const allPosts = [];
+    for (let i = 1; i <= postCount; i++) {
+      const post = await socialNetwork.methods.posts(i).call();
+
+      const isInPosts = posts.find(
+        (post_) => post_.id.toNumber() === post.id.toNumber()
+      );
+
+      if (!isInPosts) {
+        allPosts.push(post);
+      }
+    }
+    setPosts(
+      [...allPosts, ...posts]
+        .filter((post) => !post.deleted)
+        .sort((a, b) => b.tipAmount - a.tipAmount)
+    );
   }
 
   function createPost(content) {
@@ -187,6 +209,7 @@ function App() {
       });
   }
 
+  /* Modal */
   const handleClose = () => {
     setOpen(false);
   };
@@ -215,7 +238,9 @@ function App() {
             {" "}
             <Modal isOpen={modalOpen} onClose={handleClose}>
               <>
-                <PurchaseForm></PurchaseForm>
+                <PurchaseForm
+                  createTransaction={createTransaction}
+                ></PurchaseForm>
               </>
             </Modal>
           </div>

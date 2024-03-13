@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Identicon from "identicon.js";
-import PurchaseForm from "./PurchaseForm";
 
 class Navbar extends Component {
   render() {
