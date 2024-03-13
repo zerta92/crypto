@@ -10,10 +10,14 @@ const PurchaseForm = ({ createTransaction }) => {
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        const amountRaw = amountRef.current.value;
-        const amount = window.web3.utils.toWei(amountRaw, "Ether");
-        const dateValue = new Date(datePickerRef.current.value);
         const type = selectedCryptoRef.current.value;
+        const amountRaw = amountRef.current.value;
+        const amount =
+          type === "btc"
+            ? amountRaw * 1e8
+            : window.web3.utils.toWei(amountRaw, "Ether");
+
+        const dateValue = new Date(datePickerRef.current.value);
         const rate = purchaseRatetRef.current.value;
 
         createTransaction({
@@ -64,10 +68,11 @@ const PurchaseForm = ({ createTransaction }) => {
           Enter Crypto Amount
         </label>
         <input
-          type="number"
+          type="text"
           className="form-control"
           id="cryptoAmountValue"
           placeholder="Enter value"
+          pattern="[0-9]*\.?[0-9]+"
           ref={amountRef}
           required
         />
