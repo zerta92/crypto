@@ -46,6 +46,7 @@ const PurchaseForm = ({ createTransaction }) => {
         </select>
       </div>
 
+      {/* TODO: based on currency always convert to usd since that is the value we are saving in db for rate */}
       {/* <div className="mb-3">
         <label htmlFor="currencySelect" className="form-label">
           Select Fiat Currency
