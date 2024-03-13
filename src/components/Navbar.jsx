@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Identicon from "identicon.js";
+import PurchaseForm from "./PurchaseForm";
 
 class Navbar extends Component {
   render() {
@@ -12,6 +13,18 @@ class Navbar extends Component {
           rel="noopener noreferrer"
         >
           Zerta's Log
+        </a>
+
+        <a
+          className="navbar-brand col-sm-3 col-md-2 mr-0"
+          href="/"
+          target="_self"
+          onClick={(event) => {
+            event.preventDefault();
+            this.props.handleModalOpen();
+          }}
+        >
+          Purchase Crypto
         </a>
         <ul className="navbar-nav px-3">
           <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">

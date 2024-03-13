@@ -24,7 +24,7 @@ contract("SocialNetwork", ([deployer, author, tipper]) => {
 
     it("has a name", async () => {
       const name = await socialNetwork.name();
-      assert.equal(name, "Fuck Boy University Social Network");
+      assert.equal(name, "Social Network");
     });
   });
 

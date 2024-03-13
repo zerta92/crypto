@@ -30,7 +30,7 @@ contract SocialNetwork {
     event PostDeleted(uint postsCount, address payable author);
 
     constructor() public {
-        name = "Fuck Boy University Social Network";
+        name = "Social Network";
     }
 
     function createPost(string memory _content) public {

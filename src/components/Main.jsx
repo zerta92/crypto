@@ -37,6 +37,7 @@ class Main extends Component {
                 </button>
               </form>
               <p>&nbsp;</p>
+
               {this.props.posts.map((post, key) => {
                 return (
                   <div className="card mb-4" key={key}>

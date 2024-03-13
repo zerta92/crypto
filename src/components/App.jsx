@@ -1,28 +1,48 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import Web3 from "web3";
 import "./App.css";
 import Navbar from "./Navbar";
 import Main from "./Main";
 import SocialNetwork from "../abis/SocialNetwork.json";
+import Modal from "./Modal";
+import PurchaseForm from "./PurchaseForm";
+import CryptoTransactions from "../abis/CryptoTransactions.json";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      account: "",
-      socialNetwork: null,
-      postCount: 0,
-      posts: [],
-      loading: true,
-      error: false,
-    };
+function App() {
+  const [modalOpen, setOpen] = React.useState(false);
+  const [account, setAccount] = React.useState("");
+  const [socialNetwork, setSocialNetwork] = React.useState(null);
+  const [cryptoTransactions, setCryptoTransactions] = React.useState(null);
+  const [postCount, setPostCount] = React.useState(0);
+  const [transactionsCount, setTransactionsCount] = React.useState(0);
+  const [posts, setPosts] = React.useState([]);
+  const [transactions, setTransactions] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(false);
 
-    this.createPost = this.createPost.bind(this);
-    this.tipPost = this.tipPost.bind(this);
-    this.deletePost = this.deletePost.bind(this);
-  }
+  useEffect(() => {
+    async function loadBlockChain() {
+      await loadWeb3();
+      await loadBlockchainData();
+    }
+    loadBlockChain();
+  }, []);
 
-  async loadWeb3() {
+  useEffect(() => {
+    if (socialNetwork !== null) {
+      loadPosts();
+      setLoading(false);
+    }
+  }, [socialNetwork]);
+
+  useEffect(() => {
+    if (cryptoTransactions !== null) {
+      loadTransactions();
+      setLoading(false);
+    }
+  }, [cryptoTransactions]);
+
+  async function loadWeb3() {
     const options = {
       transactionConfirmationBlocks: 1,
     };
@@ -38,37 +58,57 @@ class App extends Component {
     }
   }
 
-  async loadPosts() {
-    const postCount = await this.state.socialNetwork.methods
-      .postsCount()
-      .call();
+  async function loadPosts() {
+    const postCount = await socialNetwork.methods.postsCount().call();
 
-    this.setState({ postCount });
+    setPostCount(postCount);
+    const allPosts = [];
     for (let i = 1; i <= postCount; i++) {
-      const post = await this.state.socialNetwork.methods.posts(i).call();
+      const post = await socialNetwork.methods.posts(i).call();
 
-      const isInPosts = this.state.posts.find(
+      const isInPosts = posts.find(
         (post_) => post_.id.toNumber() === post.id.toNumber()
       );
 
       if (!isInPosts) {
-        this.setState({ posts: [...this.state.posts, post] });
+        allPosts.push(post);
       }
     }
-    this.setState({
-      posts: this.state.posts
+    setPosts(
+      allPosts
         .filter((post) => !post.deleted)
-        .sort((a, b) => b.tipAmount - a.tipAmount),
-    });
+        .sort((a, b) => b.tipAmount - a.tipAmount)
+    );
   }
 
-  async loadBlockchainData() {
+  async function loadTransactions() {
+    const transactionsCount = await cryptoTransactions.methods
+      .transactionsCount()
+      .call();
+
+    setTransactionsCount(transactionsCount);
+    const allPosts = [];
+    for (let i = 1; i <= transactionsCount; i++) {
+      const post = await cryptoTransactions.methods.transactions(i).call();
+
+      allPosts.push(post);
+    }
+    setTransactions(
+      allPosts
+        .filter((_transaction) => !_transaction.deleted)
+        .sort((a, b) => b.transactionDate - a.transactionDate)
+    );
+  }
+
+  async function loadBlockchainData() {
     const web3 = window.web3;
     const accounts = await web3.eth.getAccounts();
 
-    this.setState({ account: accounts[0] });
+    setAccount(accounts[0]);
 
     const networkId = await new web3.eth.net.getId();
+
+    //SocialNetwork Contract
     const networkData = SocialNetwork.networks[networkId];
     if (networkData) {
       const socialNetwork = web3.eth.Contract(
@@ -76,92 +116,113 @@ class App extends Component {
         networkData.address
       );
 
-      this.setState({ socialNetwork });
+      setSocialNetwork(socialNetwork);
 
-      await this.loadPosts();
+      //CryptoTransactions Contract
+      const CryptoTransactionsNetworkData =
+        CryptoTransactions.networks[networkId];
 
-      this.setState({ loading: false });
+      const cryptoTransactions = web3.eth.Contract(
+        CryptoTransactions.abi,
+        CryptoTransactionsNetworkData.address
+      );
+
+      setCryptoTransactions(cryptoTransactions);
+
+      setLoading(false);
     } else {
       window.alert("SocialNetwork contract has not deployed to the network.");
     }
   }
 
-  createPost(content) {
-    this.setState({ loading: true });
-    this.state.socialNetwork.methods
+  function createPost(content) {
+    setLoading(true);
+    socialNetwork.methods
       .createPost(content)
-      .send({ from: this.state.account })
+      .send({ from: account })
       .on("confirmation", function(confirmationNumber, receipt) {})
       .on("receipt", async (receipt) => {
-        await this.loadPosts();
+        await loadPosts();
 
-        this.setState({
-          loading: false,
-        });
+        setLoading(false);
       })
       .on("error", function(error) {
-        this.setState({ error: true, loading: false });
+        setLoading(false);
+        setError(true);
       });
   }
 
-  tipPost(id, tipAmount) {
-    this.setState({ loading: true });
-    this.state.socialNetwork.methods
+  function tipPost(id, tipAmount) {
+    setLoading(true);
+    socialNetwork.methods
       .tipPost(id)
-      .send({ from: this.state.account, value: tipAmount })
+      .send({ from: account, value: tipAmount })
       .on("confirmation", function(confirmationNumber, receipt) {})
       .on("receipt", (receipt) => {
-        this.setState({ loading: false });
+        setLoading(false);
       })
       .on("error", function(error) {
-        this.setState({ error: true, loading: false });
+        setLoading(false);
+        setError(true);
       });
   }
 
-  deletePost(id) {
-    this.setState({ loading: true });
-    this.state.socialNetwork.methods
+  function deletePost(id) {
+    setLoading(true);
+    socialNetwork.methods
       .deletePost(id)
-      .send({ from: this.state.account })
+      .send({ from: account })
       .on("confirmation", function(confirmationNumber, receipt) {})
       .on("receipt", (receipt) => {
-        this.setState({
-          loading: false,
-          posts: this.state.posts.filter((post) => {
+        setLoading(false);
+        setPosts(
+          posts.filter((post) => {
             return post.id.toNumber() !== +id;
-          }),
-        });
+          })
+        );
       })
       .on("error", function(error) {
-        this.setState({ error: true, loading: false });
+        setLoading(false);
+        setError(true);
       });
   }
 
-  async componentWillMount() {
-    await this.loadWeb3();
-    await this.loadBlockchainData();
-  }
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-  render() {
-    return (
-      <div>
-        <Navbar account={this.state.account} />
-        {this.state.loading ? (
-          <div id="loader" className="text-center mt-5">
-            <p>Loading...</p>
-          </div>
-        ) : (
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  return (
+    <div>
+      <Navbar account={account} handleModalOpen={handleOpen} />
+      {loading ? (
+        <div id="loader" className="text-center mt-5">
+          <p>Loading...</p>
+        </div>
+      ) : (
+        <>
           <Main
-            posts={this.state.posts}
-            createPost={this.createPost}
-            tipPost={this.tipPost}
-            deletePost={this.deletePost}
-            account={this.state.account}
+            posts={posts}
+            createPost={createPost}
+            tipPost={tipPost}
+            deletePost={deletePost}
+            account={account}
           />
-        )}
-      </div>
-    );
-  }
+          <div>
+            {" "}
+            <Modal isOpen={modalOpen} onClose={handleClose}>
+              <>
+                <PurchaseForm></PurchaseForm>
+              </>
+            </Modal>
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 export default App;
