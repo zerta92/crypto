@@ -53,7 +53,7 @@ function App() {
     //SocialNetwork Contract
     const networkData = SocialNetwork.networks[networkId];
     if (networkData) {
-      const socialNetwork = web3.eth.Contract(
+      const socialNetwork = new web3.eth.Contract(
         SocialNetwork.abi,
         networkData.address
       );
@@ -64,7 +64,7 @@ function App() {
       const CryptoTransactionsNetworkData =
         CryptoTransactions.networks[networkId];
 
-      const cryptoTransactions = web3.eth.Contract(
+      const cryptoTransactions = new web3.eth.Contract(
         CryptoTransactions.abi,
         CryptoTransactionsNetworkData.address
       );

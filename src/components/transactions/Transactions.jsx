@@ -26,6 +26,7 @@ function Transactions({ account, cryptoTransactions }) {
           <div className="content mr-auto ml-auto">
             <p>&nbsp;</p>
             {transactions.map((transaction, key) => {
+              console.log(transaction);
               return (
                 <div className="card mb-4" key={key}>
                   <div className="card-header">
@@ -55,7 +56,7 @@ function Transactions({ account, cryptoTransactions }) {
                         <div className="col">
                           <p className="float-right">
                             {Math.round(
-                              (transaction.closeRate.toNumber() || EthRate) *
+                              (+transaction.closeRate || EthRate) *
                                 rate *
                                 window.web3.utils.fromWei(
                                   transaction.amount.toString(),
@@ -70,19 +71,18 @@ function Transactions({ account, cryptoTransactions }) {
 
                     <li key={key} className="list-group-item py-2">
                       <small className="float-left mt-1 text-muted pr-3">
-                        Opened:{" "}
-                        {formatDate(transaction.transactionDate.toNumber())}
+                        Opened: {formatDate(+transaction.transactionDate)}
                       </small>
-                      {transaction.closeDate.toNumber() ? (
+                      {+transaction.closeDate ? (
                         <small className="float-left mt-1 text-muted">
-                          Closed: {formatDate(transaction.closeDate.toNumber())}
+                          Closed: {formatDate(+transaction.closeDate)}
                         </small>
                       ) : (
                         <></>
                       )}
 
                       {account === transaction.user ? (
-                        !transaction.closeDate.toNumber() ? (
+                        !+transaction.closeDate ? (
                           <button
                             className="btn btn-link btn-sm float-right pt-0"
                             name={transaction.id}

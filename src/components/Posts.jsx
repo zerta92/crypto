@@ -26,9 +26,7 @@ function Posts({ account, socialNetwork }) {
     for (let i = 1; i <= postCount; i++) {
       const post = await socialNetwork.methods.posts(i).call();
 
-      const isInPosts = posts.find(
-        (post_) => post_.id.toNumber() === post.id.toNumber()
-      );
+      const isInPosts = posts.find((post_) => post_.i === post.i);
 
       if (!isInPosts) {
         allPosts.push(post);
@@ -46,13 +44,13 @@ function Posts({ account, socialNetwork }) {
     socialNetwork.methods
       .createPost(content)
       .send({ from: account })
-      .on("confirmation", function(confirmationNumber, receipt) {})
+      .on("confirmation", function (confirmationNumber, receipt) {})
       .on("receipt", async (receipt) => {
         await loadPosts();
 
         setLoading(false);
       })
-      .on("error", function(error) {
+      .on("error", function (error) {
         setLoading(false);
         setError(true);
       });
@@ -63,11 +61,11 @@ function Posts({ account, socialNetwork }) {
     socialNetwork.methods
       .tipPost(id)
       .send({ from: account, value: tipAmount })
-      .on("confirmation", function(confirmationNumber, receipt) {})
+      .on("confirmation", function (confirmationNumber, receipt) {})
       .on("receipt", (receipt) => {
         setLoading(false);
       })
-      .on("error", function(error) {
+      .on("error", function (error) {
         setLoading(false);
         setError(true);
       });
@@ -78,16 +76,16 @@ function Posts({ account, socialNetwork }) {
     socialNetwork.methods
       .deletePost(id)
       .send({ from: account })
-      .on("confirmation", function(confirmationNumber, receipt) {})
+      .on("confirmation", function (confirmationNumber, receipt) {})
       .on("receipt", (receipt) => {
         setLoading(false);
         setPosts(
           posts.filter((post) => {
-            return post.id.toNumber() !== +id;
+            return post.id !== +id;
           })
         );
       })
-      .on("error", function(error) {
+      .on("error", function (error) {
         setLoading(false);
         setError(true);
       });
