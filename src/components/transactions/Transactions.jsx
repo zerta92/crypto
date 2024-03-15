@@ -8,7 +8,7 @@ import { useTransactions } from "../hooks/useTransactions.jsx";
 
 function Transactions({ account, cryptoTransactions }) {
   const { currency, rate } = useGlobal();
-  const EthRate = 3531;
+  const EthRate = Math.random() * 4000;
   const BtcRate = Math.random() * 60000;
 
   const { closeTrade, transactions } = useTransactions(
@@ -55,8 +55,8 @@ function Transactions({ account, cryptoTransactions }) {
                         <div className="col">
                           <p className="float-right">
                             {Math.round(
-                              (transaction.closeRate.toNumber() * rate ||
-                                rate * EthRate) *
+                              (transaction.closeRate.toNumber() || EthRate) *
+                                rate *
                                 window.web3.utils.fromWei(
                                   transaction.amount.toString(),
                                   "Ether"
