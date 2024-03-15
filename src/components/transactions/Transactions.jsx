@@ -26,7 +26,6 @@ function Transactions({ account, cryptoTransactions }) {
           <div className="content mr-auto ml-auto">
             <p>&nbsp;</p>
             {transactions.map((transaction, key) => {
-              console.log(transaction);
               return (
                 <div className="card mb-4" key={key}>
                   <div className="card-header">

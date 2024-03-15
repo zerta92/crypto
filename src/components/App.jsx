@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
 import Web3 from "web3";
 import "./App.css";
 import Navbar from "./Navbar";
 import Posts from "./Posts";
-import Transactions from "./transactions/Transactions";
-import SocialNetwork from "../abis/SocialNetwork.json";
 import Modal from "./Modal";
 import PurchaseForm from "./PurchaseForm";
+import Transactions from "./transactions/Transactions";
+import SocialNetwork from "../abis/SocialNetwork.json";
 import CryptoTransactions from "../abis/CryptoTransactions.json";
 import { GlobalProvider } from "./context/GlobalProvider";
 
@@ -86,6 +88,29 @@ function App() {
     setOpen(true);
   };
 
+  const router = createBrowserRouter([
+    {
+      path: "/transactions",
+      element: (
+        <div>
+          {" "}
+          <Transactions
+            cryptoTransactions={cryptoTransactions}
+            account={account}
+          />
+        </div>
+      ),
+    },
+    {
+      path: "/posts",
+      element: (
+        <div>
+          <Posts socialNetwork={socialNetwork} account={account} />
+        </div>
+      ),
+    },
+  ]);
+
   return (
     <div>
       <GlobalProvider>
@@ -96,30 +121,19 @@ function App() {
           </div>
         ) : (
           <>
-            <div>
-              <div>
-                <Transactions
-                  cryptoTransactions={cryptoTransactions}
-                  account={account}
-                />
-                <div>
-                  <Posts socialNetwork={socialNetwork} account={account} />
-                </div>
-              </div>
-            </div>
-            <div>
-              {" "}
-              <Modal isOpen={modalOpen} onClose={handleClose}>
-                <>
-                  <PurchaseForm
-                    account={account}
-                    cryptoTransactions={cryptoTransactions}
-                  ></PurchaseForm>
-                </>
-              </Modal>
-            </div>
+            <RouterProvider router={router} />
           </>
         )}
+        <>
+          <Modal isOpen={modalOpen} onClose={handleClose}>
+            <>
+              <PurchaseForm
+                account={account}
+                cryptoTransactions={cryptoTransactions}
+              ></PurchaseForm>
+            </>
+          </Modal>
+        </>
       </GlobalProvider>
     </div>
   );
