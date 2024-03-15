@@ -1,6 +1,8 @@
 import React, { useRef } from "react";
+import { useTransactions } from "./hooks/useTransactions";
 
-const PurchaseForm = ({ createTransaction }) => {
+const PurchaseForm = ({ account, cryptoTransactions }) => {
+  const { createTransaction } = useTransactions(account, cryptoTransactions);
   const datePickerRef = useRef(null);
   const selectedCryptoRef = useRef(null);
   const amountRef = useRef(null);

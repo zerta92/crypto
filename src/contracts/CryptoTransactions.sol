@@ -13,6 +13,8 @@ contract CryptoTransactions {
         address payable user;
         uint transactionDate;
         uint rate;
+        uint closeDate;
+        uint closeRate;
         bool deleted;
     }
 
@@ -23,6 +25,17 @@ contract CryptoTransactions {
         address payable user,
         uint transactionDate,
         uint rate
+    );
+
+    event TransactionClosed(
+        uint id,
+        string transactionType,
+        uint amount,
+        address payable user,
+        uint transactionDate,
+        uint closeDate,
+        uint rate,
+        uint closeRate
     );
 
     constructor() public {
@@ -47,6 +60,8 @@ contract CryptoTransactions {
             msg.sender,
             _transactionDate,
             _rate,
+            0,
+            0,
             false
         );
         emit TransactionCreated(
@@ -59,18 +74,40 @@ contract CryptoTransactions {
         );
     }
 
-    // function deletePost(uint _postId) public {
-    //     require(_postId > 0 && _postId <= postsCount, "Invalid post ID");
+    function closeTrade(
+        uint _transactionId,
+        uint _closeDate,
+        uint _closeRate
+    ) public {
+        require(
+            _transactionId > 0 && _transactionId <= transactionsCount,
+            "Invalid Transaction ID"
+        );
 
-    //     require(
-    //         msg.sender == posts[_postId].author,
-    //         "You are not the owner of this post"
-    //     );
+        require(
+            msg.sender == transactions[_transactionId].user,
+            "You are not the owner of this post"
+        );
 
-    //     posts[_postId].deleted = true;
+        string memory _type = transactions[_transactionId].transactionType;
+        uint _amount = transactions[_transactionId].amount;
+        uint _transactionDate = transactions[_transactionId].transactionDate;
+        uint _rate = transactions[_transactionId].rate;
 
-    //     emit PostDeleted(postsCount, posts[_postId].author);
-    // }
+        transactions[_transactionId].closeDate = _closeDate;
+        transactions[_transactionId].closeRate = _closeRate;
+
+        emit TransactionClosed(
+            transactionsCount,
+            _type,
+            _amount,
+            msg.sender,
+            _transactionDate,
+            _closeDate,
+            _rate,
+            _closeRate
+        );
+    }
 
     // function tipPost(uint _id) public payable {
     //     require(_id > 0 && _id <= postsCount);

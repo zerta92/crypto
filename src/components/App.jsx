@@ -1,22 +1,20 @@
-import React, { Component, useEffect } from "react";
+import React, { useEffect } from "react";
 import Web3 from "web3";
 import "./App.css";
 import Navbar from "./Navbar";
-import Main from "./Main";
+import Posts from "./Posts";
+import Transactions from "./transactions/Transactions";
 import SocialNetwork from "../abis/SocialNetwork.json";
 import Modal from "./Modal";
 import PurchaseForm from "./PurchaseForm";
 import CryptoTransactions from "../abis/CryptoTransactions.json";
+import { GlobalProvider } from "./context/GlobalProvider";
 
 function App() {
   const [modalOpen, setOpen] = React.useState(false);
   const [account, setAccount] = React.useState("");
   const [socialNetwork, setSocialNetwork] = React.useState(null);
   const [cryptoTransactions, setCryptoTransactions] = React.useState(null);
-  const [postCount, setPostCount] = React.useState(0);
-  const [transactionsCount, setTransactionsCount] = React.useState(0);
-  const [posts, setPosts] = React.useState([]);
-  const [transactions, setTransactions] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
 
@@ -27,20 +25,6 @@ function App() {
     }
     loadBlockChain();
   }, []);
-
-  useEffect(() => {
-    if (socialNetwork !== null) {
-      loadPosts();
-      setLoading(false);
-    }
-  }, [socialNetwork]);
-
-  useEffect(() => {
-    if (cryptoTransactions !== null) {
-      loadTransactions();
-      setLoading(false);
-    }
-  }, [cryptoTransactions]);
 
   async function loadWeb3() {
     const options = {
@@ -93,122 +77,6 @@ function App() {
     }
   }
 
-  /* CryptoTransactions */
-  async function loadTransactions() {
-    const transactionsCount = await cryptoTransactions.methods
-      .transactionsCount()
-      .call();
-
-    setTransactionsCount(transactionsCount);
-    const allTransactions = [];
-    for (let i = 1; i <= transactionsCount; i++) {
-      const post = await cryptoTransactions.methods.transactions(i).call();
-
-      allTransactions.push(post);
-    }
-    setTransactions(
-      allTransactions
-        .filter((_transaction) => !_transaction.deleted)
-        .sort((a, b) => b.transactionDate - a.transactionDate)
-    );
-  }
-
-  function createTransaction({ type, amount, transactionDate }) {
-    console.log({ type, amount, transactionDate });
-
-    const rate = 1.23 * 1000;
-    setLoading(true);
-    cryptoTransactions.methods
-      .createTransaction(type, amount, transactionDate, rate)
-      .send({ from: account })
-      .on("confirmation", function(confirmationNumber, receipt) {})
-      .on("receipt", async (receipt) => {
-        await loadPosts();
-
-        setLoading(false);
-      })
-      .on("error", function(error) {
-        setLoading(false);
-        setError(true);
-      });
-  }
-
-  /* SocialNetwork */
-  async function loadPosts() {
-    const postCount = await socialNetwork.methods.postsCount().call();
-
-    setPostCount(postCount);
-    const allPosts = [];
-    for (let i = 1; i <= postCount; i++) {
-      const post = await socialNetwork.methods.posts(i).call();
-
-      const isInPosts = posts.find(
-        (post_) => post_.id.toNumber() === post.id.toNumber()
-      );
-
-      if (!isInPosts) {
-        allPosts.push(post);
-      }
-    }
-    setPosts(
-      [...allPosts, ...posts]
-        .filter((post) => !post.deleted)
-        .sort((a, b) => b.tipAmount - a.tipAmount)
-    );
-  }
-
-  function createPost(content) {
-    setLoading(true);
-    socialNetwork.methods
-      .createPost(content)
-      .send({ from: account })
-      .on("confirmation", function(confirmationNumber, receipt) {})
-      .on("receipt", async (receipt) => {
-        await loadPosts();
-
-        setLoading(false);
-      })
-      .on("error", function(error) {
-        setLoading(false);
-        setError(true);
-      });
-  }
-
-  function tipPost(id, tipAmount) {
-    setLoading(true);
-    socialNetwork.methods
-      .tipPost(id)
-      .send({ from: account, value: tipAmount })
-      .on("confirmation", function(confirmationNumber, receipt) {})
-      .on("receipt", (receipt) => {
-        setLoading(false);
-      })
-      .on("error", function(error) {
-        setLoading(false);
-        setError(true);
-      });
-  }
-
-  function deletePost(id) {
-    setLoading(true);
-    socialNetwork.methods
-      .deletePost(id)
-      .send({ from: account })
-      .on("confirmation", function(confirmationNumber, receipt) {})
-      .on("receipt", (receipt) => {
-        setLoading(false);
-        setPosts(
-          posts.filter((post) => {
-            return post.id.toNumber() !== +id;
-          })
-        );
-      })
-      .on("error", function(error) {
-        setLoading(false);
-        setError(true);
-      });
-  }
-
   /* Modal */
   const handleClose = () => {
     setOpen(false);
@@ -220,32 +88,39 @@ function App() {
 
   return (
     <div>
-      <Navbar account={account} handleModalOpen={handleOpen} />
-      {loading ? (
-        <div id="loader" className="text-center mt-5">
-          <p>Loading...</p>
-        </div>
-      ) : (
-        <>
-          <Main
-            posts={posts}
-            createPost={createPost}
-            tipPost={tipPost}
-            deletePost={deletePost}
-            account={account}
-          />
-          <div>
-            {" "}
-            <Modal isOpen={modalOpen} onClose={handleClose}>
-              <>
-                <PurchaseForm
-                  createTransaction={createTransaction}
-                ></PurchaseForm>
-              </>
-            </Modal>
+      <GlobalProvider>
+        <Navbar account={account} handleModalOpen={handleOpen} />
+        {loading ? (
+          <div id="loader" className="text-center mt-5">
+            <p>Loading...</p>
           </div>
-        </>
-      )}
+        ) : (
+          <>
+            <div>
+              <div>
+                <Transactions
+                  cryptoTransactions={cryptoTransactions}
+                  account={account}
+                />
+                <div>
+                  <Posts socialNetwork={socialNetwork} account={account} />
+                </div>
+              </div>
+            </div>
+            <div>
+              {" "}
+              <Modal isOpen={modalOpen} onClose={handleClose}>
+                <>
+                  <PurchaseForm
+                    account={account}
+                    cryptoTransactions={cryptoTransactions}
+                  ></PurchaseForm>
+                </>
+              </Modal>
+            </div>
+          </>
+        )}
+      </GlobalProvider>
     </div>
   );
 }
