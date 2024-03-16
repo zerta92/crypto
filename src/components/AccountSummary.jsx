@@ -18,13 +18,13 @@ function AccountSummary({ account, cryptoTransactions }) {
 
   const calculateTotalMetrics = (transactions) => {
     const profit = transactions.reduce((a, b) => {
-      if (!+b.closeDate) {
-        return a;
-      }
+      //   if (!+b.closeDate) {
+      //     return a;
+      //   }
 
       return (
         a +
-        (b.closeRate - b.rate) *
+        ((+b.closeRate || EthRate) - b.rate) *
           rate *
           +window.web3.utils.fromWei(b.amount.toString(), "Ether")
       );
