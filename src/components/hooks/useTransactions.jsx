@@ -34,18 +34,18 @@ export function useTransactions(account, cryptoTransactions) {
   }
 
   function createTransaction({ type, amount, transactionDate }) {
-    const rate = 1.23 * 1000;
+    const rate = 1.23 * 1000; //TODO: need current rate for coin
     setLoading(true);
     cryptoTransactions.methods
       .createTransaction(type, amount, transactionDate, rate)
       .send({ from: account })
-      .on("confirmation", function(confirmationNumber, receipt) {})
+      .on("confirmation", function (confirmationNumber, receipt) {})
       .on("receipt", async (receipt) => {
         await loadTransactions();
 
         setLoading(false);
       })
-      .on("error", function(error) {
+      .on("error", function (error) {
         setLoading(false);
         setError(true);
       });
@@ -57,13 +57,13 @@ export function useTransactions(account, cryptoTransactions) {
     cryptoTransactions.methods
       .closeTrade(id, closeDate, closeRate)
       .send({ from: account })
-      .on("confirmation", function(confirmationNumber, receipt) {})
+      .on("confirmation", function (confirmationNumber, receipt) {})
       .on("receipt", async (receipt) => {
         await loadTransactions();
 
         setLoading(false);
       })
-      .on("error", function(error) {
+      .on("error", function (error) {
         console.log({ error });
         setLoading(false);
         setError(true);

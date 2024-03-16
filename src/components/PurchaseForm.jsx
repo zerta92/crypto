@@ -68,7 +68,7 @@ const PurchaseForm = ({ account, cryptoTransactions }) => {
 
       <div className="mb-3">
         <label htmlFor="cryptoAmountValue" className="form-label">
-          Enter Crypto Amount
+          Enter Purchase Amount
         </label>
         <input
           type="text"
