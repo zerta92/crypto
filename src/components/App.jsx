@@ -6,6 +6,7 @@ import "./App.css";
 import Navbar from "./Navbar";
 import Posts from "./Posts";
 import Modal from "./Modal";
+import AccountSummary from "./AccountSummary";
 import PurchaseForm from "./PurchaseForm";
 import Transactions from "./transactions/Transactions";
 import SocialNetwork from "../abis/SocialNetwork.json";
@@ -106,6 +107,17 @@ function App() {
       element: (
         <div>
           <Posts socialNetwork={socialNetwork} account={account} />
+        </div>
+      ),
+    },
+    {
+      path: "/",
+      element: (
+        <div>
+          <AccountSummary
+            cryptoTransactions={cryptoTransactions}
+            account={account}
+          />
         </div>
       ),
     },

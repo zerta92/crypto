@@ -10,6 +10,7 @@ const reducer = (state, action) => {
         ...state,
         currency: action.payload,
         rate: getCurrencyUSDRate(action.payload),
+        symbol: getCurrencySymbol(action.payload),
       };
     default:
       throw new Error(`Unknown action?`);
@@ -21,6 +22,13 @@ const getCurrencyUSDRate = (currency) => {
     return 0.79;
   }
   return 1;
+};
+
+const getCurrencySymbol = (currency) => {
+  if (currency === "GBP") {
+    return "£";
+  }
+  return "$";
 };
 
 export const GlobalProvider = ({ children }) => {

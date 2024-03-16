@@ -21,10 +21,29 @@ function Navbar({ account, handleModalOpen }) {
         target="_self"
         rel="noopener noreferrer"
       >
-        Zerta's Log
+        Summary
       </a>
 
-      <button
+      <a
+        className="nav-item col-sm-3 col-md-2 mr-0"
+        href="/transactions"
+        target="_self"
+        rel="noopener noreferrer"
+      >
+        Transactions
+      </a>
+      <a
+        className="nav-item col-sm-3 col-md-2 mr-0"
+        href="/posts"
+        target="_self"
+        rel="noopener noreferrer"
+      >
+        Posts
+      </a>
+
+      <a
+        href="/"
+        target="_self"
         className="nav-item col-sm-3 col-md-2 mr-0"
         onClick={(event) => {
           event.preventDefault();
@@ -32,10 +51,13 @@ function Navbar({ account, handleModalOpen }) {
         }}
       >
         Purchase Crypto
-      </button>
-      <button
+      </a>
+      <a
         className="nav-item col-sm-3 col-md-2 mr-0"
+        href="/"
+        target="_self"
         onClick={(event) => {
+          event.preventDefault();
           dispatchGlobal({
             type: "setCurrency",
             payload: toggleCurrency(currency),
@@ -43,7 +65,7 @@ function Navbar({ account, handleModalOpen }) {
         }}
       >
         {currency}
-      </button>
+      </a>
       <ul className="navbar-nav px-3 d-flex flex-row">
         <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
           <small className="text-secondary">
