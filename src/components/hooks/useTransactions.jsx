@@ -1,15 +1,25 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useAlphavantage } from "./useAlphavantage";
 
 export function useTransactions(account, cryptoTransactions) {
   const [transactionsCount, setTransactionsCount] = React.useState(0);
   const [transactions, setTransactions] = React.useState([]);
+  const [ethRate, setEthRate] = useState(0);
 
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
 
+  const { getCryptoData } = useAlphavantage();
+
+  const getCurrentCryptoData = async () => {
+    const EthRate = await getCryptoData("ETH");
+    setEthRate(EthRate);
+  };
+
   useEffect(() => {
     if (cryptoTransactions !== null) {
       loadTransactions();
+      getCurrentCryptoData();
       setLoading(false);
     }
   }, [cryptoTransactions]);
@@ -33,11 +43,12 @@ export function useTransactions(account, cryptoTransactions) {
     );
   }
 
-  function createTransaction({ type, amount, transactionDate }) {
-    const rate = 1.23 * 1000; //TODO: need current rate for coin
+  function createTransaction({ type, amount, transactionDate, rate }) {
+    const rateToUse = rate || ethRate;
+
     setLoading(true);
     cryptoTransactions.methods
-      .createTransaction(type, amount, transactionDate, rate)
+      .createTransaction(type, amount, transactionDate, parseInt(rateToUse))
       .send({ from: account })
       .on("confirmation", function (confirmationNumber, receipt) {})
       .on("receipt", async (receipt) => {

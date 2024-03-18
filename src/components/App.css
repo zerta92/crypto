@@ -1,1 +1,13 @@
 /* Styles go here */
+.nav-bar-link{
+    border-width: 1px;
+    border-color: gray;
+    border-style: outset;
+    
+}
+
+.center-items{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

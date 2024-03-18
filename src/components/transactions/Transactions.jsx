@@ -1,20 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Identicon from "identicon.js";
 import { formatDate } from "../utils";
 import "../App.css";
 import { useGlobal } from "../context/GlobalProvider.jsx";
 
 import { useTransactions } from "../hooks/useTransactions.jsx";
+import { useAlphavantage } from "../hooks/useAlphavantage";
 
 function Transactions({ account, cryptoTransactions }) {
+  const [ethRate, setEthRate] = useState(0);
+
   const { currency, rate } = useGlobal();
-  const EthRate = Math.random() * 4000;
+
+  const { getCryptoData } = useAlphavantage();
+
   const BtcRate = Math.random() * 60000;
 
   const { closeTrade, transactions } = useTransactions(
     account,
     cryptoTransactions
   );
+
+  const getCurrentCryptoData = async () => {
+    const EthRate = await getCryptoData("ETH");
+    setEthRate(EthRate);
+  };
+
+  useEffect(() => {
+    getCurrentCryptoData("ETH");
+  }, []);
+
   return (
     <div className="container-fluid mt-5">
       <div className="row">
@@ -55,7 +70,7 @@ function Transactions({ account, cryptoTransactions }) {
                         <div className="col">
                           <p className="float-right">
                             {Math.round(
-                              (+transaction.closeRate || EthRate) *
+                              (+transaction.closeRate || ethRate) *
                                 rate *
                                 window.web3.utils.fromWei(
                                   transaction.amount.toString(),

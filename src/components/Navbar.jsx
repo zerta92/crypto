@@ -25,7 +25,7 @@ function Navbar({ account, handleModalOpen }) {
       </a>
 
       <a
-        className="nav-item col-sm-3 col-md-2 mr-0"
+        className="nav-item col-sm-2 col-md-2 mr-0 nav-bar-link center-items"
         href="/transactions"
         target="_self"
         rel="noopener noreferrer"
@@ -33,7 +33,7 @@ function Navbar({ account, handleModalOpen }) {
         Transactions
       </a>
       <a
-        className="nav-item col-sm-3 col-md-2 mr-0"
+        className="nav-item col-sm-1 col-md-1 mr-0 nav-bar-link center-items"
         href="/posts"
         target="_self"
         rel="noopener noreferrer"
@@ -44,16 +44,16 @@ function Navbar({ account, handleModalOpen }) {
       <a
         href="/"
         target="_self"
-        className="nav-item col-sm-3 col-md-2 mr-0"
+        className="nav-item col-sm-1 col-md-1 mr-0 nav-bar-link center-items"
         onClick={(event) => {
           event.preventDefault();
           handleModalOpen();
         }}
       >
-        Purchase Crypto
+        Log
       </a>
       <a
-        className="nav-item col-sm-3 col-md-2 mr-0"
+        className="nav-item col-sm-1 col-md-1 mr-0 nav-bar-link center-items"
         href="/"
         target="_self"
         onClick={(event) => {

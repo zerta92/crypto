@@ -4,27 +4,27 @@ import "./App.css";
 import { useGlobal } from "./context/GlobalProvider.jsx";
 
 import { useTransactions } from "./hooks/useTransactions.jsx";
-
+import { useAlphavantage } from "./hooks/useAlphavantage";
 function AccountSummary({ account, cryptoTransactions }) {
   const { rate, symbol } = useGlobal();
 
   const [totalProfit, setTotalProfit] = useState(0);
   const [totalInvested, setTotalInvested] = useState(0);
   const [totalProfitPercent, setTotalProfitPercent] = useState(0);
-
+  const [ethRate, setEthRate] = useState(0);
+  const { getCryptoData } = useAlphavantage();
   const { transactions } = useTransactions(account, cryptoTransactions);
 
-  const EthRate = Math.random() * 6000;
+  const getCurrentCryptoData = async () => {
+    const EthRate = await getCryptoData("ETH");
+    setEthRate(EthRate);
+  };
 
   const calculateTotalMetrics = (transactions) => {
     const profit = transactions.reduce((a, b) => {
-      //   if (!+b.closeDate) {
-      //     return a;
-      //   }
-
       return (
         a +
-        ((+b.closeRate || EthRate) - b.rate) *
+        ((+b.closeRate || ethRate) - b.rate) *
           rate *
           +window.web3.utils.fromWei(b.amount.toString(), "Ether")
       );
@@ -46,6 +46,7 @@ function AccountSummary({ account, cryptoTransactions }) {
 
   useEffect(() => {
     calculateTotalMetrics(transactions);
+    getCurrentCryptoData("ETH");
   }, [transactions, rate]);
 
   return (
@@ -56,8 +57,33 @@ function AccountSummary({ account, cryptoTransactions }) {
           className="col-lg-12 ml-auto mr-auto"
           style={{ maxWidth: "750px" }}
         >
+          <h1>Transaction Summary</h1>
+
+          <div style={{ marginBottom: "45px" }}>
+            <table className="table">
+              <thead className="bg-dark text-white shadow">
+                <tr>
+                  <th scope="col">Invested</th>
+                  <th scope="col">Profit</th>
+                  <th scope="col">Profit %</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    {symbol}
+                    {totalInvested}
+                  </td>
+                  <td>
+                    {symbol}
+                    {totalProfit}
+                  </td>
+                  <td>{totalProfitPercent}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <div className="content mr-auto ml-auto">
-            <h1>Transaction Summary</h1>
             {transactions.map((transaction, key) => {
               return (
                 <table className="table">
@@ -67,7 +93,7 @@ function AccountSummary({ account, cryptoTransactions }) {
                       <th scope="col">Amount</th>
                       <th scope="col">Opened</th>
                       <th scope="col">Closed</th>
-                      <th scope="col">Initial Value</th>
+                      <th scope="col">Investment</th>
                       <th scope="col">Profit</th>
                       <th scope="col">Open Date</th>
                       <th scope="col">Close Date</th>
@@ -113,7 +139,7 @@ function AccountSummary({ account, cryptoTransactions }) {
                         {symbol}
                         {(
                           rate *
-                          ((+transaction.closeRate || EthRate) -
+                          ((+transaction.closeRate || ethRate) -
                             transaction.rate) *
                           window.web3.utils.fromWei(
                             transaction.amount.toString(),
@@ -135,30 +161,6 @@ function AccountSummary({ account, cryptoTransactions }) {
                 </table>
               );
             })}
-          </div>
-          <div>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">Invested</th>
-                  <th scope="col">Profit</th>
-                  <th scope="col">Profit %</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    {symbol}
-                    {totalInvested}
-                  </td>
-                  <td>
-                    {symbol}
-                    {totalProfit}
-                  </td>
-                  <td>{totalProfitPercent}%</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </main>
       </div>

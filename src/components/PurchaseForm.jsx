@@ -91,7 +91,6 @@ const PurchaseForm = ({ account, cryptoTransactions }) => {
           id="cryptoAmountValue"
           placeholder="Enter value"
           ref={purchaseRatetRef}
-          required
         />
       </div>
 
