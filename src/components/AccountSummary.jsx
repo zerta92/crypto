@@ -86,7 +86,7 @@ function AccountSummary({ account, cryptoTransactions }) {
           <div className="content mr-auto ml-auto">
             {transactions.map((transaction, key) => {
               return (
-                <table className="table">
+                <table key={key} className="table">
                   <thead>
                     <tr>
                       <th scope="col">Coin</th>

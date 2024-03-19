@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { getCurrentCryptoData } from "../api/alphavantage";
 
 export function useAlphavantage() {
@@ -8,7 +8,7 @@ export function useAlphavantage() {
       toSymbol: "USD",
     });
 
-    return +cryptoData["5. Exchange Rate"];
+    return +cryptoData.value?.["5. Exchange Rate"];
   }
 
   useEffect(() => {}, []);

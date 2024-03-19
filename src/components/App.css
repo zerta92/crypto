@@ -11,3 +11,30 @@
     align-items: center;
     justify-content: center;
 }
+
+.input-box {
+    display: flex;
+    align-items: center;
+    max-width: 300px;
+    background: #fff;
+    border: 1px solid #a0a0a0;
+    border-radius: 4px;
+    padding-left: 0.5rem;
+    overflow: hidden;
+    font-family: sans-serif;
+  }
+  
+  .input-box .prefix {
+    font-weight: 300;
+    font-size: 14px;
+    color: #999;
+    margin-right: 10px;
+  }
+  
+  .input-box input {
+    flex-grow: 1;
+    font-size: 14px;
+    background: #fff;
+    /* border: none;
+    outline:auto; */
+}

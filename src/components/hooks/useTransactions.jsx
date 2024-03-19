@@ -45,7 +45,6 @@ export function useTransactions(account, cryptoTransactions) {
 
   function createTransaction({ type, amount, transactionDate, rate }) {
     const rateToUse = rate || ethRate;
-
     setLoading(true);
     cryptoTransactions.methods
       .createTransaction(type, amount, transactionDate, parseInt(rateToUse))

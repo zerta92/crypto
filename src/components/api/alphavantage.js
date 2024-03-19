@@ -26,7 +26,12 @@ export async function getCurrentCryptoData({ fromSymbol, toSymbol }) {
     `_FromSymbol_${fromSymbol}_ToSymbol_${toSymbol}`
   );
 
-  if (cached) {
+  /* Ignore cache if 6 hours stale */
+  if (
+    cached &&
+    cached.value &&
+    new Date().getTime() - new Date(cached.date).getTime() < 2.16e7
+  ) {
     console.log(
       `got cached for _FromSymbol_${fromSymbol}_ToSymbol_${toSymbol} `
     );
@@ -45,7 +50,13 @@ export async function getCurrentCryptoData({ fromSymbol, toSymbol }) {
 
   const currentDataValue = currentData["Realtime Currency Exchange Rate"];
 
-  cacheData(`_FromSymbol_${fromSymbol}_ToSymbol_${toSymbol}`, currentDataValue);
+  if (!currentDataValue) {
+    throw new Error(currentData?.Information);
+  }
 
-  return currentDataValue;
+  const valueAndDate = { value: currentDataValue, date: new Date() };
+
+  cacheData(`_FromSymbol_${fromSymbol}_ToSymbol_${toSymbol}`, valueAndDate);
+
+  return valueAndDate;
 }
