@@ -22,7 +22,7 @@ const PurchaseForm = ({ account, cryptoTransactions }) => {
 
         const dateValue = new Date(datePickerRef.current.value);
 
-        const usedRate =
+        const usedRateUSD =
           currency === "GBP"
             ? purchaseRatetRef.current.value / rate
             : purchaseRatetRef.current.value;
@@ -31,7 +31,7 @@ const PurchaseForm = ({ account, cryptoTransactions }) => {
           type,
           amount,
           transactionDate: dateValue.getTime(),
-          rate: usedRate,
+          rate: usedRateUSD,
         });
       }}
     >
