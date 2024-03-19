@@ -69,6 +69,7 @@ function Transactions({ account, cryptoTransactions }) {
                         </div>
                         <div className="col">
                           <p className="float-right">
+                            Current Value:
                             {Math.round(
                               (+transaction.closeRate || ethRate) *
                                 rate *

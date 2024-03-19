@@ -62,7 +62,7 @@ export function useTransactions(account, cryptoTransactions) {
   }
 
   function closeTrade({ id, closeDate }) {
-    const closeRate = 2.8 * 1000;
+    const closeRate = parseInt(ethRate);
     setLoading(true);
     cryptoTransactions.methods
       .closeTrade(id, closeDate, closeRate)
