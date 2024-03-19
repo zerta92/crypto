@@ -70,15 +70,19 @@ function Transactions({ account, cryptoTransactions }) {
                         <div className="col">
                           <p className="float-right">
                             Current Value:
-                            {Math.round(
-                              (+transaction.closeRate || ethRate) *
-                                rate *
-                                window.web3.utils.fromWei(
-                                  transaction.amount.toString(),
-                                  "Ether"
-                                )
-                            )}
-                            {currency}
+                            <b>
+                              {" "}
+                              &nbsp;
+                              {Math.round(
+                                (+transaction.closeRate || ethRate) *
+                                  rate *
+                                  window.web3.utils.fromWei(
+                                    transaction.amount.toString(),
+                                    "Ether"
+                                  )
+                              )}
+                              {currency}
+                            </b>
                           </p>
                         </div>
                       </div>
