@@ -11,14 +11,9 @@ function AccountSummary({ account, cryptoTransactions }) {
   const [totalProfit, setTotalProfit] = useState(0);
   const [totalInvested, setTotalInvested] = useState(0);
   const [totalProfitPercent, setTotalProfitPercent] = useState(0);
-  const [ethRate, setEthRate] = useState(0);
-  const { getCryptoData } = useAlphavantage();
-  const { transactions } = useTransactions(account, cryptoTransactions);
 
-  const getCurrentCryptoData = async () => {
-    const EthRate = await getCryptoData("ETH");
-    setEthRate(EthRate);
-  };
+  const { ethRate } = useAlphavantage();
+  const { transactions } = useTransactions(account, cryptoTransactions);
 
   const calculateTotalMetrics = (transactions) => {
     const profit = transactions.reduce((a, b) => {
@@ -46,8 +41,7 @@ function AccountSummary({ account, cryptoTransactions }) {
 
   useEffect(() => {
     calculateTotalMetrics(transactions);
-    getCurrentCryptoData("ETH");
-  }, [transactions, rate]);
+  }, [transactions, rate, ethRate]);
 
   return (
     <div className="container-fluid mt-5">

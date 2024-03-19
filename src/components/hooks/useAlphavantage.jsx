@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getCurrentCryptoData } from "../api/alphavantage";
 
 export function useAlphavantage() {
+  const [ethRate, setEthRate] = useState(0);
+
   async function getCryptoData(coin) {
     const cryptoData = await getCurrentCryptoData({
       fromSymbol: coin,
@@ -11,7 +13,14 @@ export function useAlphavantage() {
     return +cryptoData.value?.["5. Exchange Rate"];
   }
 
-  useEffect(() => {}, []);
+  async function loadAllCryptoRates() {
+    const ethData = await getCryptoData("ETH");
+    setEthRate(+ethData);
+  }
 
-  return { getCryptoData };
+  useEffect(() => {
+    loadAllCryptoRates("ETH");
+  }, []);
+
+  return { getCryptoData, ethRate };
 }

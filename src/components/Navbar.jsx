@@ -1,9 +1,10 @@
 import React from "react";
 import Identicon from "identicon.js";
 import { useGlobal, useDispatchGlobal } from "./context/GlobalProvider.jsx";
-
+import { useAlphavantage } from "./hooks/useAlphavantage";
 function Navbar({ account, handleModalOpen }) {
-  const { currency } = useGlobal();
+  const { currency, symbol, rate } = useGlobal();
+  const { ethRate } = useAlphavantage();
   const dispatchGlobal = useDispatchGlobal();
 
   const toggleCurrency = (currency) => {
@@ -23,6 +24,10 @@ function Navbar({ account, handleModalOpen }) {
       >
         Summary
       </a>
+      <span className="navbar-brand col-sm-1 col-md-1 mr-0">
+        ETH: {symbol}
+        {ethRate * rate}
+      </span>
 
       <a
         className="nav-item col-sm-2 col-md-2 mr-0 nav-bar-link center-items"
