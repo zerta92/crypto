@@ -3,6 +3,7 @@ import { getCurrentCryptoData } from "../api/alphavantage";
 
 export function useAlphavantage() {
   const [ethRate, setEthRate] = useState(0);
+  const [btcRate, setBtcRate] = useState(0);
 
   async function getCryptoData(coin) {
     const cryptoData = await getCurrentCryptoData({
@@ -15,12 +16,14 @@ export function useAlphavantage() {
 
   async function loadAllCryptoRates() {
     const ethData = await getCryptoData("ETH");
+    const btcData = await getCryptoData("BTC");
+    setBtcRate(+btcData);
     setEthRate(+ethData);
   }
 
   useEffect(() => {
-    loadAllCryptoRates("ETH");
+    loadAllCryptoRates();
   }, []);
 
-  return { getCryptoData, ethRate };
+  return { getCryptoData, ethRate, btcRate };
 }

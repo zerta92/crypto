@@ -8,27 +8,14 @@ import { useTransactions } from "../hooks/useTransactions.jsx";
 import { useAlphavantage } from "../hooks/useAlphavantage";
 
 function Transactions({ account, cryptoTransactions }) {
-  const [ethRate, setEthRate] = useState(0);
-
   const { currency, rate } = useGlobal();
 
-  const { getCryptoData } = useAlphavantage();
-
-  const BtcRate = Math.random() * 60000;
+  const { ethRate, btcRate } = useAlphavantage();
 
   const { closeTrade, transactions } = useTransactions(
     account,
     cryptoTransactions
   );
-
-  const getCurrentCryptoData = async () => {
-    const EthRate = await getCryptoData("ETH");
-    setEthRate(EthRate);
-  };
-
-  useEffect(() => {
-    getCurrentCryptoData("ETH");
-  }, []);
 
   return (
     <div className="container-fluid mt-5">
@@ -56,37 +43,72 @@ function Transactions({ account, cryptoTransactions }) {
                     />
                   </div>
                   <ul id="postList" className="list-group list-group-flush">
-                    <li className="list-group-item">
-                      <div className="row">
-                        <div className="col">
-                          <p>
-                            {window.web3.utils.fromWei(
-                              transaction.amount.toString(),
-                              "Ether"
-                            )}{" "}
-                            {transaction.transactionType}
-                          </p>
+                    {/* Ethereum  */}
+                    {transaction.transactionType === "eth" ? (
+                      <li className="list-group-item">
+                        <div className="row">
+                          <div className="col">
+                            <p>
+                              {window.web3.utils.fromWei(
+                                transaction.amount.toString(),
+                                "Ether"
+                              )}{" "}
+                              {transaction.transactionType}
+                            </p>
+                          </div>
+                          <div className="col">
+                            <p className="float-right">
+                              Current Value:
+                              <b>
+                                {" "}
+                                &nbsp;
+                                {Math.round(
+                                  (+transaction.closeRate || ethRate) *
+                                    rate *
+                                    window.web3.utils.fromWei(
+                                      transaction.amount.toString(),
+                                      "Ether"
+                                    )
+                                )}
+                                {currency}
+                              </b>
+                            </p>
+                          </div>
                         </div>
-                        <div className="col">
-                          <p className="float-right">
-                            Current Value:
-                            <b>
-                              {" "}
-                              &nbsp;
-                              {Math.round(
-                                (+transaction.closeRate || ethRate) *
-                                  rate *
-                                  window.web3.utils.fromWei(
-                                    transaction.amount.toString(),
-                                    "Ether"
-                                  )
-                              )}
-                              {currency}
-                            </b>
-                          </p>
+                      </li>
+                    ) : (
+                      <></>
+                    )}
+                    {/* Bitcoin  */}
+                    {transaction.transactionType === "btc" ? (
+                      <li className="list-group-item">
+                        <div className="row">
+                          <div className="col">
+                            <p>
+                              {transaction.amount / 1e8}{" "}
+                              {transaction.transactionType}
+                            </p>
+                          </div>
+                          <div className="col">
+                            <p className="float-right">
+                              Current Value:
+                              <b>
+                                {" "}
+                                &nbsp;
+                                {Math.round(
+                                  (+transaction.closeRate || btcRate) *
+                                    rate *
+                                    (transaction.amount / 1e8)
+                                )}
+                                {currency}
+                              </b>
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </li>
+                      </li>
+                    ) : (
+                      <></>
+                    )}
 
                     <li key={key} className="list-group-item py-2">
                       <small className="float-left mt-1 text-muted pr-3">

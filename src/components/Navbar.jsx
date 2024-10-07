@@ -7,7 +7,7 @@ import { cacheData } from "./utils.js";
 function Navbar({ account, handleModalOpen }) {
   const { currency, symbol, rate } = useGlobal();
 
-  const { ethRate } = useAlphavantage();
+  const { ethRate, btcRate } = useAlphavantage();
   const dispatchGlobal = useDispatchGlobal();
 
   const toggleCurrency = (currency) => {
@@ -35,6 +35,10 @@ function Navbar({ account, handleModalOpen }) {
           <span className="navbar-brand mr-3">
             ETH: {symbol}
             {(ethRate * rate).toFixed(2)}
+          </span>
+          <span className="navbar-brand mr-3">
+            BTC: {symbol}
+            {(btcRate * rate).toFixed(2)}
           </span>
 
           <a
