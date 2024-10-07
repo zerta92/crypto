@@ -1,4 +1,5 @@
 import React, { useReducer, useContext, createContext, useEffect } from "react";
+import { cacheData, getCachedData } from "../utils";
 
 const GlobalStateContext = createContext(null);
 const GlobalDispatchContext = createContext(null);
@@ -32,7 +33,7 @@ const getCurrencySymbol = (currency) => {
 };
 
 export const GlobalProvider = ({ children }) => {
-  const locale = "GBP";
+  const locale = getCachedData(`_crypto_log_locale`) ?? "GBP";
 
   const initialState = {};
 

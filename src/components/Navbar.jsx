@@ -2,16 +2,20 @@ import React from "react";
 import Identicon from "identicon.js";
 import { useGlobal, useDispatchGlobal } from "./context/GlobalProvider.jsx";
 import { useAlphavantage } from "./hooks/useAlphavantage";
+import { cacheData } from "./utils.js";
 
 function Navbar({ account, handleModalOpen }) {
   const { currency, symbol, rate } = useGlobal();
+
   const { ethRate } = useAlphavantage();
   const dispatchGlobal = useDispatchGlobal();
 
   const toggleCurrency = (currency) => {
     if (currency === "GBP") {
+      cacheData(`_crypto_log_locale`, "USD");
       return "USD";
     }
+    cacheData(`_crypto_log_locale`, "GBP");
     return "GBP";
   };
 
