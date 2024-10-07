@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Identicon from "identicon.js";
-import { formatDate } from "../utils";
+import { formatDate, fromSmallestUnit, toSmallestUnit } from "../utils";
 import "../App.css";
 import { useGlobal } from "../context/GlobalProvider.jsx";
 
@@ -49,9 +49,9 @@ function Transactions({ account, cryptoTransactions }) {
                         <div className="row">
                           <div className="col">
                             <p>
-                              {window.web3.utils.fromWei(
-                                transaction.amount.toString(),
-                                "Ether"
+                              {fromSmallestUnit(
+                                transaction.transactionType,
+                                transaction.amount
                               )}{" "}
                               {transaction.transactionType}
                             </p>
@@ -65,9 +65,9 @@ function Transactions({ account, cryptoTransactions }) {
                                 {Math.round(
                                   (+transaction.closeRate || ethRate) *
                                     rate *
-                                    window.web3.utils.fromWei(
-                                      transaction.amount.toString(),
-                                      "Ether"
+                                    fromSmallestUnit(
+                                      transaction.transactionType,
+                                      transaction.amount
                                     )
                                 )}
                                 {currency}
@@ -85,7 +85,10 @@ function Transactions({ account, cryptoTransactions }) {
                         <div className="row">
                           <div className="col">
                             <p>
-                              {transaction.amount / 1e8}{" "}
+                              {fromSmallestUnit(
+                                transaction.transactionType,
+                                transaction.amount
+                              )}{" "}
                               {transaction.transactionType}
                             </p>
                           </div>
@@ -98,7 +101,10 @@ function Transactions({ account, cryptoTransactions }) {
                                 {Math.round(
                                   (+transaction.closeRate || btcRate) *
                                     rate *
-                                    (transaction.amount / 1e8)
+                                    fromSmallestUnit(
+                                      transaction.transactionType,
+                                      transaction.amount
+                                    )
                                 )}
                                 {currency}
                               </b>

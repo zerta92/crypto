@@ -1,5 +1,3 @@
-import { cache } from "react";
-
 export const formatDate = (utcDate) => {
   const day = new Date(utcDate).getDate();
 
@@ -11,16 +9,9 @@ export const formatDate = (utcDate) => {
 
 export const cacheData = (cacheName, response) => {
   localStorage.setItem(cacheName, JSON.stringify(response));
-  // const data = new Response(JSON.stringify(response));
-  // if ("caches" in window) {
-  //   caches.open(cacheName).then((cache) => {
-  //     cache.put(url, data);
-  //   });
-  // }
 };
 
 export const getCachedData = (cacheName) => {
-  // if ("caches" in window) {
   const cache = localStorage.getItem(cacheName);
 
   if (!cache) {
@@ -28,8 +19,24 @@ export const getCachedData = (cacheName) => {
   }
 
   return JSON.parse(cache);
-  //   caches.open(cacheName).then((cache) => {
-  //     console.log(cache);
-  //   });
-  // }
+};
+
+export const fromSmallestUnit = (coinType, amount) => {
+  if (coinType === "eth") {
+    return window.web3.utils.fromWei(amount.toString(), "Ether");
+  }
+  if (coinType === "btc") {
+    return amount / 1e8;
+  }
+  throw new Error("Unsupported coin type!");
+};
+
+export const toSmallestUnit = (coinType, amount) => {
+  if (coinType === "eth") {
+    return window.web3.utils.toWei(amount, "Ether");
+  }
+  if (coinType === "btc") {
+    return amount * 1e8;
+  }
+  throw new Error("Unsupported coin type!");
 };

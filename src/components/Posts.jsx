@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import Identicon from "identicon.js";
 import "./App.css";
+import { fromSmallestUnit, toSmallestUnit } from "./utils";
 
 function Posts({ account, socialNetwork }) {
   const [postCount, setPostCount] = React.useState(0);
@@ -146,20 +147,13 @@ function Posts({ account, socialNetwork }) {
                     <li key={key} className="list-group-item py-2">
                       <small className="float-left mt-1 text-muted">
                         TIPS:{" "}
-                        {window.web3.utils.fromWei(
-                          post.tipAmount.toString(),
-                          "Ether"
-                        )}{" "}
-                        ETH
+                        {fromSmallestUnit("eth", post.tipAmount.toString())} ETH
                       </small>
                       <button
                         className="btn btn-link btn-sm float-right pt-0"
                         name={post.id}
                         onClick={(event) => {
-                          let tipAmount = window.web3.utils.toWei(
-                            "0.1",
-                            "Ether"
-                          );
+                          let tipAmount = toSmallestUnit("eth", "0.1");
                           tipPost(event.target.name, tipAmount);
                         }}
                       >

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { formatDate } from "./utils";
+import { formatDate, fromSmallestUnit } from "./utils";
 import "./App.css";
 import { useGlobal } from "./context/GlobalProvider.jsx";
 import { useTransactions } from "./hooks/useTransactions.jsx";
@@ -19,15 +19,12 @@ function AccountSummary({ account, cryptoTransactions }) {
         a +
         ((+b.closeRate || ethRate) - b.rate) *
           rate *
-          +window.web3.utils.fromWei(b.amount.toString(), "Ether")
+          fromSmallestUnit(b.transactionType, b.amount)
       );
     }, 0);
 
     const invested = transactions.reduce((a, b) => {
-      return (
-        a +
-        rate * b.rate * +window.web3.utils.fromWei(b.amount.toString(), "Ether")
-      );
+      return a + rate * b.rate * fromSmallestUnit(b.transactionType, b.amount);
     }, 0);
 
     const profitPercent = invested ? (100 * profit) / invested : 0;
@@ -105,9 +102,9 @@ function AccountSummary({ account, cryptoTransactions }) {
                           <td>{transaction.transactionType.toUpperCase()}</td>
                           {/* Amount */}
                           <td>
-                            {window.web3.utils.fromWei(
-                              transaction.amount.toString(),
-                              "Ether"
+                            {fromSmallestUnit(
+                              transaction.transactionType,
+                              transaction.amount
                             )}
                           </td>
                           {/* Opened */}
@@ -128,9 +125,9 @@ function AccountSummary({ account, cryptoTransactions }) {
                             {(
                               rate *
                               transaction.rate *
-                              window.web3.utils.fromWei(
-                                transaction.amount.toString(),
-                                "Ether"
+                              fromSmallestUnit(
+                                transaction.transactionType,
+                                transaction.amount
                               )
                             ).toFixed(2)}
                           </td>
@@ -141,9 +138,9 @@ function AccountSummary({ account, cryptoTransactions }) {
                               rate *
                               ((+transaction.closeRate || ethRate) -
                                 transaction.rate) *
-                              window.web3.utils.fromWei(
-                                transaction.amount.toString(),
-                                "Ether"
+                              fromSmallestUnit(
+                                transaction.transactionType,
+                                transaction.amount
                               )
                             ).toFixed(2)}
                           </td>

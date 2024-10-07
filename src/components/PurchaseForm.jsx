@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { useTransactions } from "./hooks/useTransactions";
 import { useGlobal } from "./context/GlobalProvider.jsx";
+import { toSmallestUnit } from "./utils.js";
 const PurchaseForm = ({ account, cryptoTransactions }) => {
   const { currency, rate, symbol } = useGlobal();
   const { createTransaction } = useTransactions(account, cryptoTransactions);
@@ -15,10 +16,7 @@ const PurchaseForm = ({ account, cryptoTransactions }) => {
         event.preventDefault();
         const type = selectedCryptoRef.current.value;
         const amountRaw = amountRef.current.value;
-        const amount =
-          type === "btc"
-            ? amountRaw * 1e8
-            : window.web3.utils.toWei(amountRaw, "Ether");
+        const amount = toSmallestUnit(type, amountRaw);
 
         const dateValue = new Date(datePickerRef.current.value);
 
