@@ -76,30 +76,31 @@ function AccountSummary({ account, cryptoTransactions }) {
           </div>
 
           <div className="content mr-auto ml-auto">
-            {transactions.map((transaction, key) => {
-              return (
-                <div key={key} className="card mb-3 shadow-sm">
-                  <div className="card-header bg-dark text-white">
-                    Transaction {key + 1}
-                  </div>
-                  <div className="card-body">
-                    <table className="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th scope="col">Coin</th>
-                          <th scope="col">Amount</th>
-                          <th scope="col">Opened</th>
-                          <th scope="col">Closed</th>
-                          <th scope="col">Investment</th>
-                          <th scope="col">Profit</th>
-                          <th scope="col">Open Date</th>
-                          <th scope="col">Close Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
+            <div className="card mb-3 shadow-sm">
+              <div className="card-header bg-dark text-white">
+                All Transactions
+              </div>
+              <div className="card-body">
+                <table className="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th scope="col">Coin</th>
+                      <th scope="col">Amount</th>
+                      <th scope="col">Opened</th>
+                      <th scope="col">Closed</th>
+                      <th scope="col">Paid</th>
+                      <th scope="col">Profit</th>
+                      <th scope="col">Open Date</th>
+                      <th scope="col">Close Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transactions.map((transaction, key) => {
+                      return (
+                        <tr key={key}>
                           {/* Coin */}
                           <td>{transaction.transactionType.toUpperCase()}</td>
+
                           {/* Amount */}
                           <td>
                             {fromSmallestUnit(
@@ -107,19 +108,22 @@ function AccountSummary({ account, cryptoTransactions }) {
                               transaction.amount
                             )}
                           </td>
+
                           {/* Opened */}
                           <td>
                             {symbol}
-                            {rate * transaction.rate}
+                            {(rate * transaction.rate).toFixed(2)}
                           </td>
+
                           {/* Closed */}
                           <td>
                             {symbol}
                             {+transaction.closeDate
-                              ? rate * transaction.closeRate
+                              ? (rate * transaction.closeRate).toFixed(2)
                               : " - "}
                           </td>
-                          {/* Initial Value  */}
+
+                          {/* Paid */}
                           <td>
                             {symbol}
                             {(
@@ -131,7 +135,8 @@ function AccountSummary({ account, cryptoTransactions }) {
                               )
                             ).toFixed(2)}
                           </td>
-                          {/* Profit  */}
+
+                          {/* Profit */}
                           <td>
                             {symbol}
                             {(
@@ -144,21 +149,23 @@ function AccountSummary({ account, cryptoTransactions }) {
                               )
                             ).toFixed(2)}
                           </td>
-                          {/* Open Date  */}
+
+                          {/* Open Date */}
                           <td>{formatDate(+transaction.transactionDate)}</td>
-                          {/* Close Date  */}
+
+                          {/* Close Date */}
                           <td>
                             {+transaction.closeDate
                               ? formatDate(+transaction.closeDate)
                               : " - "}
                           </td>
                         </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              );
-            })}
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </main>
       </div>
