@@ -25,15 +25,15 @@ export function useTransactions(account, cryptoTransactions) {
   }, [cryptoTransactions]);
 
   async function loadTransactions() {
-    const transactionsCount = await cryptoTransactions.methods
-      .transactionsCount()
-      .call();
+    const userTransactions = await cryptoTransactions.methods
+      .getTransactionsByUser()
+      .call({ from: account });
 
-    setTransactionsCount(transactionsCount);
+    setTransactionsCount(userTransactions.length);
     const allTransactions = [];
-    for (let i = 1; i <= transactionsCount; i++) {
-      const post = await cryptoTransactions.methods.transactions(i).call();
 
+    for (let id of userTransactions) {
+      const post = await cryptoTransactions.methods.transactions(+id).call();
       allTransactions.push(post);
     }
     setTransactions(

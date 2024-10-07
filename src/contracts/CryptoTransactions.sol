@@ -109,13 +109,26 @@ contract CryptoTransactions {
         );
     }
 
-    // function tipPost(uint _id) public payable {
-    //     require(_id > 0 && _id <= postsCount);
-    //     Post memory _post = posts[_id];
-    //     address payable _author = _post.author;
-    //     address(_author).transfer(msg.value);
-    //     _post.tipAmount = _post.tipAmount + msg.value;
-    //     posts[_id] = _post;
-    //     emit PostTipped(postsCount, _post.content, _post.tipAmount, _author);
-    // }
+    function getTransactionsByUser() public view returns (uint[] memory) {
+        uint[] memory result = new uint[](transactionsCount);
+        uint counter = 0;
+
+        // Iterate over all transactions and filter by msg.sender (the caller)
+        for (uint i = 1; i <= transactionsCount; i++) {
+            if (
+                transactions[i].user == msg.sender && !transactions[i].deleted
+            ) {
+                result[counter] = transactions[i].id;
+                counter++;
+            }
+        }
+
+        // Create a properly sized array and copy the result
+        uint[] memory filteredResult = new uint[](counter);
+        for (uint i = 0; i < counter; i++) {
+            filteredResult[i] = result[i];
+        }
+
+        return filteredResult;
+    }
 }
