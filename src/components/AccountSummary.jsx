@@ -10,7 +10,7 @@ function AccountSummary({ account, cryptoTransactions }) {
   const [totalProfit, setTotalProfit] = useState(0);
   const [totalInvested, setTotalInvested] = useState(0);
   const [totalProfitPercent, setTotalProfitPercent] = useState(0);
-  const { ethRate } = useAlphavantage();
+  const { ethRate, getCoinRate } = useAlphavantage();
   const { transactions } = useTransactions(account, cryptoTransactions);
 
   const calculateTotalMetrics = (transactions) => {
@@ -141,7 +141,8 @@ function AccountSummary({ account, cryptoTransactions }) {
                             {symbol}
                             {(
                               rate *
-                              ((+transaction.closeRate || ethRate) -
+                              ((+transaction.closeRate ||
+                                getCoinRate(transaction.transactionType)) -
                                 transaction.rate) *
                               fromSmallestUnit(
                                 transaction.transactionType,

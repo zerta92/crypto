@@ -14,6 +14,17 @@ export function useAlphavantage() {
     return +cryptoData.value?.["5. Exchange Rate"];
   }
 
+  const getCoinRate = (coinType) => {
+    if (coinType === "eth") {
+      return ethRate;
+    }
+    if (coinType === "btc") {
+      return btcRate;
+    }
+
+    throw new Error("Unsupported coin type!");
+  };
+
   async function loadAllCryptoRates() {
     const ethData = await getCryptoData("ETH");
     const btcData = await getCryptoData("BTC");
@@ -25,5 +36,5 @@ export function useAlphavantage() {
     loadAllCryptoRates();
   }, []);
 
-  return { getCryptoData, ethRate, btcRate };
+  return { getCryptoData, ethRate, btcRate, getCoinRate };
 }

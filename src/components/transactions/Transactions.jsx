@@ -15,7 +15,7 @@ function Transactions({ account, cryptoTransactions }) {
   const [saleRate, setSaleRate] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(-1);
 
-  const { ethRate, btcRate } = useAlphavantage();
+  const { ethRate, btcRate, getCoinRate } = useAlphavantage();
 
   const { closeTrade, transactions } = useTransactions(
     account,
@@ -27,16 +27,6 @@ function Transactions({ account, cryptoTransactions }) {
     setSelectedDate(today);
   }, []);
 
-  const getCoinRate = (coinType) => {
-    if (coinType === "eth") {
-      return ethRate;
-    }
-    if (coinType === "btc") {
-      return btcRate;
-    }
-
-    throw new Error("Unsupported coin type!");
-  };
   const handleCloseTrade = (transaction, key) => {
     if (datePickerRef.current?.value) {
       closeTrade({
@@ -82,78 +72,38 @@ function Transactions({ account, cryptoTransactions }) {
                     />
                   </div>
                   <ul id="postList" className="list-group list-group-flush">
-                    {/* Ethereum  */}
-                    {transaction.transactionType === "eth" ? (
-                      <li className="list-group-item">
-                        <div className="row">
-                          <div className="col">
-                            <p>
-                              {fromSmallestUnit(
-                                transaction.transactionType,
-                                transaction.amount
-                              )}{" "}
-                              {transaction.transactionType}
-                            </p>
-                          </div>
-                          <div className="col">
-                            <p className="float-right">
-                              Current Value:
-                              <b>
-                                {" "}
-                                &nbsp;
-                                {Math.round(
-                                  (+transaction.closeRate || ethRate) *
-                                    rate *
-                                    fromSmallestUnit(
-                                      transaction.transactionType,
-                                      transaction.amount
-                                    )
-                                )}
-                                {currency}
-                              </b>
-                            </p>
-                          </div>
+                    <li className="list-group-item">
+                      <div className="row">
+                        <div className="col">
+                          <p>
+                            {fromSmallestUnit(
+                              transaction.transactionType,
+                              transaction.amount
+                            )}{" "}
+                            {transaction.transactionType}
+                          </p>
                         </div>
-                      </li>
-                    ) : (
-                      <></>
-                    )}
-                    {/* Bitcoin  */}
-                    {transaction.transactionType === "btc" ? (
-                      <li className="list-group-item">
-                        <div className="row">
-                          <div className="col">
-                            <p>
-                              {fromSmallestUnit(
-                                transaction.transactionType,
-                                transaction.amount
-                              )}{" "}
-                              {transaction.transactionType}
-                            </p>
-                          </div>
-                          <div className="col">
-                            <p className="float-right">
-                              Current Value:
-                              <b>
-                                {" "}
-                                &nbsp;
-                                {Math.round(
-                                  (+transaction.closeRate || btcRate) *
-                                    rate *
-                                    fromSmallestUnit(
-                                      transaction.transactionType,
-                                      transaction.amount
-                                    )
-                                )}
-                                {currency}
-                              </b>
-                            </p>
-                          </div>
+                        <div className="col">
+                          <p className="float-right">
+                            Current Value:
+                            <b>
+                              {" "}
+                              &nbsp;
+                              {Math.round(
+                                (+transaction.closeRate ||
+                                  getCoinRate(transaction.transactionType)) *
+                                  rate *
+                                  fromSmallestUnit(
+                                    transaction.transactionType,
+                                    transaction.amount
+                                  )
+                              )}
+                              {currency}
+                            </b>
+                          </p>
                         </div>
-                      </li>
-                    ) : (
-                      <></>
-                    )}
+                      </div>
+                    </li>
 
                     <li key={key} className="list-group-item py-2">
                       <small className="float-left mt-1 text-muted pr-3">
