@@ -3,7 +3,6 @@ import Identicon from "identicon.js";
 import { formatDate, fromSmallestUnit } from "../utils";
 import "../App.css";
 import { useGlobal } from "../context/GlobalProvider.jsx";
-
 import { useTransactions } from "../hooks/useTransactions.jsx";
 import { useAlphavantage } from "../hooks/useAlphavantage";
 
