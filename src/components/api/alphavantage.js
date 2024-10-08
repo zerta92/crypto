@@ -32,10 +32,6 @@ export async function getCurrentCryptoData({ fromSymbol, toSymbol }) {
     cached.value &&
     new Date().getTime() - new Date(cached.date).getTime() < 2.16e7
   ) {
-    console.log(
-      `got cached data for _FromSymbol_${fromSymbol}_ToSymbol_${toSymbol} `
-    );
-
     return cached;
   }
 

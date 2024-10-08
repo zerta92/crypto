@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Identicon from "identicon.js";
-import { formatDate, fromSmallestUnit, toSmallestUnit } from "../utils";
+import { formatDate, fromSmallestUnit } from "../utils";
 import "../App.css";
 import { useGlobal } from "../context/GlobalProvider.jsx";
 
@@ -8,7 +8,13 @@ import { useTransactions } from "../hooks/useTransactions.jsx";
 import { useAlphavantage } from "../hooks/useAlphavantage";
 
 function Transactions({ account, cryptoTransactions }) {
-  const { currency, rate } = useGlobal();
+  const { currency, rate, symbol } = useGlobal();
+  const datePickerRef = useRef(null);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [dateError, setDateError] = useState(false);
+
+  const [saleRate, setSaleRate] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(-1);
 
   const { ethRate, btcRate } = useAlphavantage();
 
@@ -17,6 +23,41 @@ function Transactions({ account, cryptoTransactions }) {
     cryptoTransactions
   );
 
+  // Get today's date and format it as YYYY-MM-DD
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    setSelectedDate(today); // Set the current date to selectedDate state
+  }, []);
+
+  const getCoinRate = (coinType) => {
+    if (coinType === "eth") {
+      return ethRate;
+    }
+    if (coinType === "btc") {
+      return btcRate;
+    }
+
+    throw new Error("Unsupported coin type!");
+  };
+  const handleCloseTrade = (transaction, key) => {
+    if (datePickerRef.current?.value) {
+      closeTrade({
+        id: transaction.id,
+        closeDate: new Date().getTime(),
+      });
+      datePickerRef.current.value = null;
+      setSaleRate("");
+      setShowDatePicker(-1);
+    } else {
+      setSaleRate(
+        getCoinRate(transaction.transactionType) *
+          rate *
+          fromSmallestUnit(transaction.transactionType, transaction.amount)
+      );
+
+      setShowDatePicker(key);
+    }
+  };
   return (
     <div className="container-fluid mt-5">
       <div className="row">
@@ -128,19 +169,86 @@ function Transactions({ account, cryptoTransactions }) {
                         <></>
                       )}
 
+                      {/* Datepicker */}
+                      {showDatePicker === key ? (
+                        <div className="mt-5 p-4 bg-light rounded shadow-sm">
+                          {/* Sale Rate Input */}
+                          <div className="mb-4">
+                            <label
+                              htmlFor="cryptoAmountValue"
+                              className="form-label font-weight-bold"
+                            >
+                              Enter Sale Rate
+                            </label>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  {symbol}
+                                </span>
+                              </div>
+                              <input
+                                type="number"
+                                className="form-control"
+                                id="cryptoAmountValue"
+                                placeholder={`Enter value in ${currency}`}
+                                value={saleRate}
+                                onChange={(e) => setSaleRate(e.target.value)}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Date Picker Input */}
+                          <div className="mb-3">
+                            <label
+                              htmlFor="datePicker"
+                              className="form-label font-weight-bold"
+                            >
+                              Select Closing Date
+                            </label>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="fas fa-calendar-alt"></i>{" "}
+                                  {/* Calendar Icon */}
+                                </span>
+                              </div>
+                              <input
+                                type="date"
+                                className={`form-control ${
+                                  dateError ? "is-invalid" : ""
+                                }`}
+                                id="datePicker"
+                                ref={datePickerRef}
+                                value={selectedDate}
+                                required
+                                onChange={(e) => {
+                                  setSelectedDate(e.target.value);
+                                  setDateError(null);
+                                }}
+                              />
+                              {dateError && (
+                                <div className="invalid-feedback">
+                                  Please select a closing date.
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+
+                      {/* Close Trade Button */}
                       {account === transaction.user ? (
                         !+transaction.closeDate ? (
                           <button
                             className="btn btn-link btn-sm float-right pt-0"
                             name={transaction.id}
                             onClick={(event) => {
-                              closeTrade({
-                                id: transaction.id,
-                                closeDate: new Date().getTime(),
-                              });
+                              handleCloseTrade(transaction, key);
                             }}
                           >
-                            CLOSE TRADE
+                            {showDatePicker === key ? "CONFIRM" : "CLOSE TRADE"}
                           </button>
                         ) : (
                           <div className="float-right pt-0">CLOSED</div>
