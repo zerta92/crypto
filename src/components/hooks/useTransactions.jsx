@@ -46,19 +46,22 @@ export function useTransactions(account, cryptoTransactions) {
   function createTransaction({ type, amount, transactionDate, rate }) {
     const rateToUse = rate || ethRate;
     setLoading(true);
-    cryptoTransactions.methods
-      .createTransaction(type, amount, transactionDate, parseInt(rateToUse))
-      .send({ from: account })
-      .on("confirmation", function (confirmationNumber, receipt) {})
-      .on("receipt", async (receipt) => {
-        await loadTransactions();
-
-        setLoading(false);
-      })
-      .on("error", function (error) {
-        setLoading(false);
-        setError(true);
-      });
+    return new Promise((resolve, reject) => {
+      cryptoTransactions.methods
+        .createTransaction(type, amount, transactionDate, parseInt(rateToUse))
+        .send({ from: account })
+        .on("confirmation", function (confirmationNumber, receipt) {})
+        .on("receipt", async (receipt) => {
+          await loadTransactions();
+          setLoading(false);
+          resolve();
+        })
+        .on("error", function (error) {
+          setLoading(false);
+          setError(true);
+          resolve();
+        });
+    });
   }
 
   function closeTrade({ id, closeDate }) {

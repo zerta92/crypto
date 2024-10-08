@@ -126,7 +126,11 @@ function App() {
   return (
     <div>
       <GlobalProvider>
-        <Navbar account={account} handleModalOpen={handleOpen} />
+        <Navbar
+          account={account}
+          handleModalOpen={handleOpen}
+          handleModalClose={handleClose}
+        />
         {loading ? (
           <div id="loader" className="text-center mt-5">
             <p>Loading...</p>
@@ -142,6 +146,7 @@ function App() {
               <PurchaseForm
                 account={account}
                 cryptoTransactions={cryptoTransactions}
+                handleModalClose={handleClose}
               ></PurchaseForm>
             </>
           </Modal>

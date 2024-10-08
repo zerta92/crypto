@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { useTransactions } from "./hooks/useTransactions";
 import { useGlobal } from "./context/GlobalProvider.jsx";
 import { toSmallestUnit } from "./utils.js";
-const PurchaseForm = ({ account, cryptoTransactions }) => {
+const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
   const { currency, rate, symbol } = useGlobal();
   const { createTransaction } = useTransactions(account, cryptoTransactions);
   const datePickerRef = useRef(null);
@@ -12,7 +12,7 @@ const PurchaseForm = ({ account, cryptoTransactions }) => {
 
   return (
     <form
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
         const type = selectedCryptoRef.current.value;
         const amountRaw = amountRef.current.value;
@@ -25,12 +25,14 @@ const PurchaseForm = ({ account, cryptoTransactions }) => {
             ? purchaseRatetRef.current.value / rate
             : purchaseRatetRef.current.value;
 
-        createTransaction({
+        await createTransaction({
           type,
           amount,
           transactionDate: dateValue.getTime(),
           rate: usedRateUSD,
         });
+
+        handleModalClose();
       }}
     >
       <div className="mb-3">

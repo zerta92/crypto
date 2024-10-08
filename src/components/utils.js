@@ -36,7 +36,7 @@ export const toSmallestUnit = (coinType, amount) => {
     return window.web3.utils.toWei(amount, "Ether");
   }
   if (coinType === "btc") {
-    return amount * 1e8;
+    return (amount * 1e8).toString();
   }
   throw new Error("Unsupported coin type!");
 };
