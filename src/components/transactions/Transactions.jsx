@@ -23,10 +23,9 @@ function Transactions({ account, cryptoTransactions }) {
     cryptoTransactions
   );
 
-  // Get today's date and format it as YYYY-MM-DD
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
-    setSelectedDate(today); // Set the current date to selectedDate state
+    setSelectedDate(today);
   }, []);
 
   const getCoinRate = (coinType) => {
