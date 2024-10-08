@@ -45,13 +45,23 @@ function App() {
     }
   }
 
+  async function getNetworkId(web3) {
+    try {
+      const networkId = await web3.eth.net.getId();
+      console.log("Network ID:", networkId);
+      return networkId;
+    } catch (error) {
+      console.error("Error fetching network ID:", error);
+    }
+  }
+
   async function loadBlockchainData() {
     const web3 = window.web3;
     const accounts = await web3.eth.getAccounts();
 
     setAccount(accounts[0]);
 
-    const networkId = await new web3.eth.net.getId();
+    const networkId = await getNetworkId(web3);
 
     //SocialNetwork Contract
     const networkData = SocialNetwork.networks[networkId];

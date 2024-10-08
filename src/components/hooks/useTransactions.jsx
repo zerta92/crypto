@@ -24,6 +24,14 @@ export function useTransactions(account, cryptoTransactions) {
     }
   }, [cryptoTransactions]);
 
+  const transactionBigIntToNumberKeys = [
+    "amount",
+    "closeDate",
+    "closeRate",
+    "id",
+    "rate",
+    "transactionDate",
+  ];
   async function loadTransactions() {
     const userTransactions = await cryptoTransactions.methods
       .getTransactionsByUser()
@@ -33,13 +41,19 @@ export function useTransactions(account, cryptoTransactions) {
     const allTransactions = [];
 
     for (let id of userTransactions) {
-      const post = await cryptoTransactions.methods.transactions(+id).call();
+      const post = await cryptoTransactions.methods.transactions(id).call();
+      Object.keys(post).forEach((key) => {
+        if (transactionBigIntToNumberKeys.includes(key)) {
+          post[key] = Number(post[key]);
+        }
+      });
       allTransactions.push(post);
     }
+
     setTransactions(
       allTransactions
         .filter((_transaction) => !_transaction.deleted)
-        .sort((a, b) => b.transactionDate - a.transactionDate)
+        .sort((a, b) => Number(b.transactionDate) - Number(a.transactionDate))
     );
   }
 

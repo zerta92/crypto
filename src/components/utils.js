@@ -20,23 +20,28 @@ export const getCachedData = (cacheName) => {
 
   return JSON.parse(cache);
 };
-
 export const fromSmallestUnit = (coinType, amount) => {
+  amount = amount.toString();
+
   if (coinType === "eth") {
-    return window.web3.utils.fromWei(amount.toString(), "Ether");
+    return window.web3.utils.fromWei(amount, "ether");
   }
   if (coinType === "btc") {
-    return amount / 1e8;
+    return (Number(amount) / 1e8).toString();
   }
+
   throw new Error("Unsupported coin type!");
 };
 
 export const toSmallestUnit = (coinType, amount) => {
+  amount = amount.toString();
+
   if (coinType === "eth") {
-    return window.web3.utils.toWei(amount, "Ether");
+    return window.web3.utils.toWei(amount, "ether");
   }
   if (coinType === "btc") {
-    return (amount * 1e8).toString();
+    return (Number(amount) * 1e8).toString();
   }
+
   throw new Error("Unsupported coin type!");
 };
