@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import Identicon from "identicon.js";
-import { formatDate, fromSmallestUnit } from "../utils";
+import { formatDate, fromSmallestUnit, convertToUsd } from "../utils";
 import "../App.css";
 import { useGlobal } from "../context/GlobalProvider.jsx";
 import { useTransactions } from "../hooks/useTransactions.jsx";
@@ -15,7 +15,7 @@ function Transactions({ account, cryptoTransactions }) {
   const [saleRate, setSaleRate] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(-1);
 
-  const { ethRate, btcRate, getCoinRate } = useAlphavantage();
+  const { getCoinRate } = useAlphavantage();
 
   const { closeTrade, transactions } = useTransactions(
     account,
@@ -31,7 +31,8 @@ function Transactions({ account, cryptoTransactions }) {
     if (datePickerRef.current?.value) {
       closeTrade({
         id: transaction.id,
-        closeDate: new Date().getTime(),
+        closeDate: new Date(selectedDate).getTime(),
+        saleRateUsd: convertToUsd(saleRate, rate),
       });
       datePickerRef.current.value = null;
       setSaleRate("");

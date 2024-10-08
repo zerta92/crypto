@@ -45,3 +45,7 @@ export const toSmallestUnit = (coinType, amount) => {
 
   throw new Error("Unsupported coin type!");
 };
+
+export const convertToUsd = (amount, rate) => {
+  return amount / rate;
+};

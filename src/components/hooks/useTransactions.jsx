@@ -1,25 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useAlphavantage } from "./useAlphavantage";
+import React, { useEffect } from "react";
 
 export function useTransactions(account, cryptoTransactions) {
   const [transactionsCount, setTransactionsCount] = React.useState(0);
   const [transactions, setTransactions] = React.useState([]);
-  const [ethRate, setEthRate] = useState(0);
 
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
 
-  const { getCryptoData } = useAlphavantage();
-
-  const getCurrentCryptoData = async () => {
-    const EthRate = await getCryptoData("ETH");
-    setEthRate(EthRate);
-  };
-
   useEffect(() => {
     if (cryptoTransactions !== null) {
       loadTransactions();
-      getCurrentCryptoData();
       setLoading(false);
     }
   }, [cryptoTransactions]);
@@ -58,7 +48,10 @@ export function useTransactions(account, cryptoTransactions) {
   }
 
   function createTransaction({ type, amount, transactionDate, rate }) {
-    const rateToUse = rate || ethRate;
+    const rateToUse = rate;
+    if (!rate) {
+      throw new Error("Crypto rate missing");
+    }
     setLoading(true);
     return new Promise((resolve, reject) => {
       cryptoTransactions.methods
@@ -78,8 +71,8 @@ export function useTransactions(account, cryptoTransactions) {
     });
   }
 
-  function closeTrade({ id, closeDate }) {
-    const closeRate = parseInt(ethRate);
+  function closeTrade({ id, closeDate, saleRateUsd }) {
+    const closeRate = parseInt(saleRateUsd);
     setLoading(true);
     cryptoTransactions.methods
       .closeTrade(id, closeDate, closeRate)

@@ -116,6 +116,7 @@ function AccountSummary({ account, cryptoTransactions }) {
                           </td>
 
                           {/* Closed */}
+
                           <td>
                             {symbol}
                             {+transaction.closeDate

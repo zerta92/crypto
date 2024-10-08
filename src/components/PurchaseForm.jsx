@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { useTransactions } from "./hooks/useTransactions";
 import { useGlobal } from "./context/GlobalProvider.jsx";
-import { toSmallestUnit } from "./utils.js";
+import { convertToUsd, toSmallestUnit } from "./utils.js";
 const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
   const { currency, rate, symbol } = useGlobal();
   const { createTransaction } = useTransactions(account, cryptoTransactions);
@@ -20,10 +20,7 @@ const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
 
         const dateValue = new Date(datePickerRef.current.value);
 
-        const usedRateUSD =
-          currency === "GBP"
-            ? purchaseRatetRef.current.value / rate
-            : purchaseRatetRef.current.value;
+        const usedRateUSD = convertToUsd(purchaseRatetRef.current.value, rate);
 
         await createTransaction({
           type,
@@ -52,24 +49,6 @@ const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
           <option value="dot">Polkadot</option>
         </select>
       </div>
-
-      {/* TODO: based on currency always convert to usd since that is the value we are saving in db for rate */}
-      {/* <div className="mb-3">
-        <label htmlFor="currencySelect" className="form-label">
-          Select Fiat Currency
-        </label>
-        <select
-          className="form-select"
-          id="currencySelect"
-          style={{
-            display: "block",
-          }}
-        >
-          <option value="usd">USD</option>
-          <option value="eur">EUR</option>
-          <option value="gbp">GBP</option>
-        </select>
-      </div> */}
 
       <div className="mb-3">
         <label htmlFor="cryptoAmountValue" className="form-label">

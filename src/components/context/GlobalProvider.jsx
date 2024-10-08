@@ -19,8 +19,9 @@ const reducer = (state, action) => {
 };
 
 const getCurrencyUSDRate = (currency) => {
+  //todo: make this dynamic and add gbprate at open and at close
   if (currency === "GBP") {
-    return 0.79;
+    return 0.76;
   }
   return 1;
 };
