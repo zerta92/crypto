@@ -35,24 +35,31 @@ function App() {
     };
     console.log(process.env);
     if (window.ethereum) {
-      window.web3 = new Web3(
-        new Web3.providers.HttpProvider(
-          `https://sepolia.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`
-        ),
-        null,
-        options
-      );
-      // window.web3 = new Web3(window.ethereum, null, options);
+      if (process.env.NODE_ENV === "production") {
+        window.web3 = new Web3(
+          new Web3.providers.HttpProvider(
+            `https://sepolia.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`
+          ),
+          null,
+          options
+        );
+      } else {
+        window.web3 = new Web3(window.ethereum, null, options);
+      }
+
       await window.ethereum.enable();
     } else if (window.web3) {
-      // window.web3 = new Web3(window.web3.currentProvider, null, options);
-      window.web3 = new Web3(
-        new Web3.providers.HttpProvider(
-          `https://sepolia.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`
-        ),
-        null,
-        options
-      );
+      if (process.env.NODE_ENV === "production") {
+        window.web3 = new Web3(
+          new Web3.providers.HttpProvider(
+            `https://sepolia.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`
+          ),
+          null,
+          options
+        );
+      } else {
+        window.web3 = new Web3(window.web3.currentProvider, null, options);
+      }
     } else {
       window.alert(
         "Non-Ethereum browser detected. You Should consider trying MetaMask!"
