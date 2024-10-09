@@ -1,22 +1,66 @@
-require('babel-register');
-require('babel-polyfill');
+require("dotenv").config();
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+require("babel-register");
+require("babel-polyfill");
 
 module.exports = {
   networks: {
     development: {
       host: "127.0.0.1",
       port: 7545,
-      network_id: "*" // Match any network id
+      network_id: "*",
+    },
+    sepolia: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.REACT_APP_DEPLOYER_PRIVATE_KEY,
+          `https://sepolia.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`
+        ),
+      network_id: 11155111, // Sepolia network ID
+      gas: 5500000, // Gas limit (can adjust based on contract)
+      confirmations: 2, // Wait for 2 confirmations
+      timeoutBlocks: 200, // Wait up to 200 blocks for a response
+      skipDryRun: true, // Skip dry run before migrations
+    },
+    mainnet: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.REACT_APP_DEPLOYER_PRIVATE_KEY,
+          `https://mainnetxxx.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}` //added xxx for safety
+        ),
+      network_id: 1, // Mainnet network ID
+      gas: 5500000, // Adjust gas limit as necessary
+      gasPrice: 20000000000, // 20 gwei (adjust for current network conditions)
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
     },
   },
-  contracts_directory: './src/contracts/',
-  contracts_build_directory: './src/abis/',
+  contracts_directory: "./src/contracts/",
+  contracts_build_directory: "./src/abis/",
   compilers: {
     solc: {
-      optimizer: {
-        enabled: true,
-        runs: 200
-      }
-    }
-  }
-}
+      version: "0.5.0", // Solidity version
+    },
+  },
+};
+
+// module.exports = {
+//   networks: {
+//     development: {
+//       host: "127.0.0.1",
+//       port: 7545,
+//       network_id: "*" // Match any network id
+//     },
+//   },
+//   contracts_directory: './src/contracts/',
+//   contracts_build_directory: './src/abis/',
+//   compilers: {
+//     solc: {
+//       optimizer: {
+//         enabled: true,
+//         runs: 200
+//       }
+//     }
+//   }
+// }
