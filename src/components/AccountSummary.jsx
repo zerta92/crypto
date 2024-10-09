@@ -44,7 +44,7 @@ function AccountSummary({ account, cryptoTransactions }) {
         <main
           role="main"
           className="col-lg-12 ml-auto mr-auto"
-          style={{ maxWidth: "750px" }}
+          style={{ maxWidth: "75%" }}
         >
           <h1 className="text-center mb-4">Account Transaction Summary</h1>
 
@@ -74,98 +74,101 @@ function AccountSummary({ account, cryptoTransactions }) {
               </div>
             </div>
           </div>
-
           <div className="content mr-auto ml-auto">
             <div className="card mb-3 shadow-sm">
               <div className="card-header bg-dark text-white">
                 All Transactions
               </div>
               <div className="card-body">
-                <table className="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th scope="col">Coin</th>
-                      <th scope="col">Amount</th>
-                      <th scope="col">Opened</th>
-                      <th scope="col">Closed</th>
-                      <th scope="col">Paid</th>
-                      <th scope="col">Profit</th>
-                      <th scope="col">Open Date</th>
-                      <th scope="col">Close Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {transactions.map((transaction, key) => {
-                      return (
-                        <tr key={key}>
-                          {/* Coin */}
-                          <td>{transaction.transactionType.toUpperCase()}</td>
+                <div className="table-responsive">
+                  {" "}
+                  {/* Added this div */}
+                  <table className="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col">Coin</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Opened</th>
+                        <th scope="col">Closed</th>
+                        <th scope="col">Paid</th>
+                        <th scope="col">Profit</th>
+                        <th scope="col">Open Date</th>
+                        <th scope="col">Close Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {transactions.map((transaction, key) => {
+                        return (
+                          <tr key={key}>
+                            {/* Coin */}
+                            <td>{transaction.transactionType.toUpperCase()}</td>
 
-                          {/* Amount */}
-                          <td>
-                            {fromSmallestUnit(
-                              transaction.transactionType,
-                              transaction.amount
-                            )}
-                          </td>
-
-                          {/* Opened */}
-                          <td>
-                            {symbol}
-                            {(rate * transaction.rate).toFixed(2)}
-                          </td>
-
-                          {/* Closed */}
-
-                          <td>
-                            {symbol}
-                            {+transaction.closeDate
-                              ? (rate * transaction.closeRate).toFixed(2)
-                              : " - "}
-                          </td>
-
-                          {/* Paid */}
-                          <td>
-                            {symbol}
-                            {(
-                              rate *
-                              transaction.rate *
-                              fromSmallestUnit(
+                            {/* Amount */}
+                            <td>
+                              {fromSmallestUnit(
                                 transaction.transactionType,
                                 transaction.amount
-                              )
-                            ).toFixed(2)}
-                          </td>
+                              )}
+                            </td>
 
-                          {/* Profit */}
-                          <td>
-                            {symbol}
-                            {(
-                              rate *
-                              ((+transaction.closeRate ||
-                                getCoinRate(transaction.transactionType)) -
-                                transaction.rate) *
-                              fromSmallestUnit(
-                                transaction.transactionType,
-                                transaction.amount
-                              )
-                            ).toFixed(2)}
-                          </td>
+                            {/* Opened */}
+                            <td>
+                              {symbol}
+                              {(rate * transaction.rate).toFixed(2)}
+                            </td>
 
-                          {/* Open Date */}
-                          <td>{formatDate(+transaction.transactionDate)}</td>
+                            {/* Closed */}
+                            <td>
+                              {symbol}
+                              {+transaction.closeDate
+                                ? (rate * transaction.closeRate).toFixed(2)
+                                : " - "}
+                            </td>
 
-                          {/* Close Date */}
-                          <td>
-                            {+transaction.closeDate
-                              ? formatDate(+transaction.closeDate)
-                              : " - "}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                            {/* Paid */}
+                            <td>
+                              {symbol}
+                              {(
+                                rate *
+                                transaction.rate *
+                                fromSmallestUnit(
+                                  transaction.transactionType,
+                                  transaction.amount
+                                )
+                              ).toFixed(2)}
+                            </td>
+
+                            {/* Profit */}
+                            <td>
+                              {symbol}
+                              {(
+                                rate *
+                                ((+transaction.closeRate ||
+                                  getCoinRate(transaction.transactionType)) -
+                                  transaction.rate) *
+                                fromSmallestUnit(
+                                  transaction.transactionType,
+                                  transaction.amount
+                                )
+                              ).toFixed(2)}
+                            </td>
+
+                            {/* Open Date */}
+                            <td>{formatDate(+transaction.transactionDate)}</td>
+
+                            {/* Close Date */}
+                            <td>
+                              {+transaction.closeDate
+                                ? formatDate(+transaction.closeDate)
+                                : " - "}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>{" "}
+                {/* Closing table-responsive div */}
               </div>
             </div>
           </div>
