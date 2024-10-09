@@ -33,7 +33,7 @@ function App() {
     const options = {
       transactionConfirmationBlocks: 1,
     };
-    console.log(process.env);
+
     if (window.ethereum) {
       if (process.env.NODE_ENV === "production") {
         window.web3 = new Web3(
@@ -71,7 +71,6 @@ function App() {
     try {
       const networkId = await web3.eth.net.getId();
       console.log("Network ID:", networkId);
-      console.log(process.env);
       return networkId;
     } catch (error) {
       console.error("Error fetching network ID:", error);
