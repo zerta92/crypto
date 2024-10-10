@@ -4,6 +4,7 @@
 ### Build `truffle build` to build migration
 ### Migrate Local `truffle migrate --reset` to run migrations and deploy smart contracts to the local Ganache EVM
 ### Migrate to specific network `truffle migrate --network sepolia` to run migrations and deploy smart contracts to the Sepolia testnet
+### Migrate to specific network `truffle migrate --reset --network sepolia` This ensures a fresh migration and that Truffle updates the network information
 
 
 ## Truffle commands
