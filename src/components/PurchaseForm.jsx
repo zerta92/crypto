@@ -1,14 +1,22 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTransactions } from "./hooks/useTransactions";
 import { useGlobal } from "./context/GlobalProvider.jsx";
 import { convertToUsd, toSmallestUnit } from "./utils.js";
+import { useAlphavantage } from "./hooks/useAlphavantage.jsx";
 const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
   const { currency, rate, symbol } = useGlobal();
   const { createTransaction } = useTransactions(account, cryptoTransactions);
+  const { getCoinRate, ethRate } = useAlphavantage();
   const datePickerRef = useRef(null);
+
   const selectedCryptoRef = useRef(null);
   const amountRef = useRef(null);
   const purchaseRatetRef = useRef(null);
+  const [purchaseRate, setPurchaseRate] = useState(0);
+
+  useEffect(() => {
+    setPurchaseRate(getCoinRate("eth") * rate);
+  }, [rate, ethRate]);
 
   return (
     <form
@@ -20,7 +28,7 @@ const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
 
         const dateValue = new Date(datePickerRef.current.value);
 
-        const usedRateUSD = convertToUsd(purchaseRatetRef.current.value, rate);
+        const usedRateUSD = convertToUsd(purchaseRate, rate);
 
         await createTransaction({
           type,
@@ -43,6 +51,10 @@ const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
             display: "block",
           }}
           ref={selectedCryptoRef}
+          onChange={(e) => {
+            const coinRate = getCoinRate(e.target.value) * rate;
+            setPurchaseRate(coinRate);
+          }}
         >
           <option value="eth">Ethereum</option>
           <option value="btc">Bitcoin</option>
@@ -79,6 +91,8 @@ const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
             id="cryptoAmountValue"
             placeholder={`Enter value ${currency}`}
             ref={purchaseRatetRef}
+            value={purchaseRate}
+            onChange={(e) => setPurchaseRate(e.target.value)}
           />
         </div>
       </div>

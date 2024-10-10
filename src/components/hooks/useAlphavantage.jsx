@@ -14,6 +14,7 @@ export function useAlphavantage() {
     return +cryptoData.value?.["5. Exchange Rate"];
   }
 
+  /* Coin rate in USD */
   const getCoinRate = (coinType) => {
     if (coinType === "eth") {
       return ethRate;
