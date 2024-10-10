@@ -13,9 +13,12 @@ const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
   const amountRef = useRef(null);
   const purchaseRatetRef = useRef(null);
   const [purchaseRate, setPurchaseRate] = useState(0);
+  const [selectedDate, setSelectedDate] = useState("");
 
   useEffect(() => {
     setPurchaseRate(getCoinRate("eth") * rate);
+    const today = new Date().toISOString().split("T")[0];
+    setSelectedDate(today);
   }, [rate, ethRate]);
 
   return (
@@ -26,7 +29,7 @@ const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
         const amountRaw = amountRef.current.value;
         const amount = toSmallestUnit(type, amountRaw);
 
-        const dateValue = new Date(datePickerRef.current.value);
+        const dateValue = new Date(selectedDate);
 
         const usedRateUSD = convertToUsd(purchaseRate, rate);
 
@@ -106,7 +109,11 @@ const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
           className="form-control"
           id="datePicker"
           ref={datePickerRef}
+          value={selectedDate}
           required
+          onChange={(e) => {
+            setSelectedDate(e.target.value);
+          }}
         />
       </div>
 
