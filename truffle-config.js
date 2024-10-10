@@ -19,8 +19,9 @@ module.exports = {
       network_id: 11155111, // Sepolia network ID
       gas: 5500000, // Gas limit (can adjust based on contract)
       confirmations: 2, // Wait for 2 confirmations
-      timeoutBlocks: 200, // Wait up to 200 blocks for a response
       skipDryRun: true, // Skip dry run before migrations
+      networkCheckTimeout: 10000,
+      timeoutBlocks: 200,
     },
     mainnet: {
       provider: () =>
