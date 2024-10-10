@@ -11,6 +11,8 @@ function Posts({ account, socialNetwork }) {
   const [error, setError] = React.useState(false);
   const [posts, setPosts] = React.useState([]);
 
+  const postBigIntToNumberKeys = ["tipAmount"];
+
   useEffect(() => {
     if (socialNetwork !== null) {
       loadPosts();
@@ -26,6 +28,12 @@ function Posts({ account, socialNetwork }) {
     const allPosts = [];
     for (let i = 1; i <= postCount; i++) {
       const post = await socialNetwork.methods.posts(i).call();
+
+      Object.keys(post).forEach((key) => {
+        if (postBigIntToNumberKeys.includes(key)) {
+          post[key] = Number(post[key]);
+        }
+      });
 
       const isInPosts = posts.find((post_) => post_.i === post.i);
 
