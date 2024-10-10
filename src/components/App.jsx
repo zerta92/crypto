@@ -80,7 +80,10 @@ function App() {
   async function loadBlockchainData() {
     const web3 = window.web3;
 
-    const accounts = await web3.eth.getAccounts();
+    // const accounts = await web3.eth.getAccounts();
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
 
     setAccount(accounts[0]);
 
