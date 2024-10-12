@@ -1,5 +1,6 @@
 import React, { useReducer, useContext, createContext, useEffect } from "react";
 import { cacheData, getCachedData } from "../utils";
+import { getCurrentCryptoData } from "../api/alphavantage";
 
 const GlobalStateContext = createContext(null);
 const GlobalDispatchContext = createContext(null);
@@ -10,18 +11,26 @@ const reducer = (state, action) => {
       return {
         ...state,
         currency: action.payload,
-        rate: getCurrencyUSDRate(action.payload),
         symbol: getCurrencySymbol(action.payload),
+      };
+    case "setRate":
+      return {
+        ...state,
+        rate: +action.payload,
       };
     default:
       throw new Error(`Unknown action?`);
   }
 };
 
-const getCurrencyUSDRate = (currency) => {
-  //todo: make this dynamic and add gbprate at open and at close
+const getCurrencyUSDRate = async (currency) => {
+  const cryptoData = await getCurrentCryptoData({
+    fromSymbol: "USD",
+    toSymbol: currency,
+  });
+
   if (currency === "GBP") {
-    return 0.76;
+    return cryptoData?.value?.["5. Exchange Rate"];
   }
   return 1;
 };
@@ -35,6 +44,10 @@ const getCurrencySymbol = (currency) => {
 
 export const GlobalProvider = ({ children }) => {
   const locale = getCachedData(`_crypto_log_locale`) ?? "GBP";
+  const usdGbpRate =
+    getCachedData(`_FromSymbol_USD_ToSymbol_${locale}`)?.value?.[
+      "5. Exchange Rate"
+    ] ?? 1;
 
   const initialState = {};
 
@@ -42,6 +55,7 @@ export const GlobalProvider = ({ children }) => {
 
   useEffect(() => {
     dispatch({ type: "setCurrency", payload: locale });
+    dispatch({ type: "setRate", payload: usdGbpRate });
   }, [locale]);
 
   return (
