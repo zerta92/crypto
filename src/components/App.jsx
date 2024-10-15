@@ -10,14 +10,13 @@ import AccountSummary from "./AccountSummary";
 import PurchaseForm from "./PurchaseForm";
 import Transactions from "./transactions/Transactions";
 import SocialNetwork from "../abis/SocialNetwork.json";
-import CryptoTransactions from "../abis/CryptoTransactions.json";
 import { GlobalProvider } from "./context/GlobalProvider";
+import { TransactionProvider } from "./context/TransactionContext.tsx";
 
 function App() {
   const [modalOpen, setOpen] = React.useState(false);
   const [account, setAccount] = React.useState("");
   const [socialNetwork, setSocialNetwork] = React.useState(null);
-  const [cryptoTransactions, setCryptoTransactions] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
 
@@ -95,17 +94,6 @@ function App() {
 
       setSocialNetwork(socialNetwork);
 
-      //CryptoTransactions Contract
-      const CryptoTransactionsNetworkData =
-        CryptoTransactions.networks[networkId];
-
-      const cryptoTransactions = new web3.eth.Contract(
-        CryptoTransactions.abi,
-        CryptoTransactionsNetworkData.address
-      );
-
-      setCryptoTransactions(cryptoTransactions);
-
       setLoading(false);
     } else {
       window.alert("SocialNetwork contract has not deployed to the network.");
@@ -127,10 +115,7 @@ function App() {
       element: (
         <div>
           {" "}
-          <Transactions
-            cryptoTransactions={cryptoTransactions}
-            account={account}
-          />
+          <Transactions />
         </div>
       ),
     },
@@ -138,7 +123,7 @@ function App() {
       path: "/posts",
       element: (
         <div>
-          <Posts socialNetwork={socialNetwork} account={account} />
+          <Posts socialNetwork={socialNetwork} />
         </div>
       ),
     },
@@ -146,10 +131,7 @@ function App() {
       path: "/",
       element: (
         <div>
-          <AccountSummary
-            cryptoTransactions={cryptoTransactions}
-            account={account}
-          />
+          <AccountSummary />
         </div>
       ),
     },
@@ -157,32 +139,26 @@ function App() {
 
   return (
     <div>
-      <GlobalProvider>
-        <Navbar
-          account={account}
-          handleModalOpen={handleOpen}
-          handleModalClose={handleClose}
-        />
-        {loading ? (
-          <div id="loader" className="text-center mt-5">
-            <p>Loading...</p>
-          </div>
-        ) : (
-          <>
-            <RouterProvider router={router} />
-          </>
-        )}
-        <>
-          <Modal isOpen={modalOpen} onClose={handleClose}>
+      <GlobalProvider account={account}>
+        <TransactionProvider web3={window.web3}>
+          <Navbar handleModalOpen={handleOpen} handleModalClose={handleClose} />
+          {loading ? (
+            <div id="loader" className="text-center mt-5">
+              <p>Loading...</p>
+            </div>
+          ) : (
             <>
-              <PurchaseForm
-                account={account}
-                cryptoTransactions={cryptoTransactions}
-                handleModalClose={handleClose}
-              ></PurchaseForm>
+              <RouterProvider router={router} />
             </>
-          </Modal>
-        </>
+          )}
+          <>
+            <Modal isOpen={modalOpen} onClose={handleClose}>
+              <>
+                <PurchaseForm handleModalClose={handleClose}></PurchaseForm>
+              </>
+            </Modal>
+          </>
+        </TransactionProvider>
       </GlobalProvider>
     </div>
   );

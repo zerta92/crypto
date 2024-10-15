@@ -2,13 +2,16 @@ import React, { useRef, useEffect } from "react";
 import Identicon from "identicon.js";
 import "./App.css";
 import { fromSmallestUnit, toSmallestUnit } from "./utils";
+import { useGlobal } from "./context/GlobalProvider";
 
-function Posts({ account, socialNetwork }) {
+function Posts({ socialNetwork }) {
+  const { account } = useGlobal();
   const [postCount, setPostCount] = React.useState(0);
   const postContentRef = useRef(null);
 
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
   const [posts, setPosts] = React.useState([]);
 
   const postBigIntToNumberKeys = ["tipAmount"];
@@ -50,18 +53,25 @@ function Posts({ account, socialNetwork }) {
 
   function createPost(content) {
     setLoading(true);
+
     socialNetwork.methods
       .createPost(content)
       .send({ from: account })
-      .on("confirmation", function (confirmationNumber, receipt) {})
+      .on("confirmation", function (confirmationNumber, receipt) {
+        console.log({ confirmationNumber });
+      })
       .on("receipt", async (receipt) => {
         await loadPosts();
-
         setLoading(false);
       })
       .on("error", function (error) {
         setLoading(false);
         setError(true);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setError(true);
+        setErrorMessage(err.message ?? "There was an error");
       });
   }
 
@@ -126,6 +136,7 @@ function Posts({ account, socialNetwork }) {
                   required
                 />
               </div>
+              {error && <p style={{ color: "red" }}>{errorMessage}</p>}
               <button type="submit" className="btn btn-primary btn-block">
                 Share
               </button>

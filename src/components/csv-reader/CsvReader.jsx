@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import Papa from "papaparse";
 import { useTransactions } from "../hooks/useTransactions.jsx";
 import { toSmallestUnit } from "../utils.js";
+import { useTransactionContext } from "../context/TransactionContext.tsx";
 
 const allowedExtensions = ["csv"];
 
-const CsvReader = ({ account, cryptoTransactions }) => {
+const CsvReader = ({ account }) => {
   const [data, setData] = useState([]);
-  const { createTransactions } = useTransactions(account, cryptoTransactions);
+
+  const { createTransactions } = useTransactionContext();
   const [error, setError] = useState("");
   const [file, setFile] = useState("");
 

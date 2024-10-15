@@ -4,8 +4,8 @@ import { useGlobal, useDispatchGlobal } from "./context/GlobalProvider.jsx";
 import { useAlphavantage } from "./hooks/useAlphavantage";
 import { cacheData } from "./utils.js";
 
-function Navbar({ account, handleModalOpen, handleModalClose }) {
-  const { currency, symbol, rate } = useGlobal();
+function Navbar({ handleModalOpen }) {
+  const { currency, symbol, rate, account } = useGlobal();
   const { ethRate, btcRate } = useAlphavantage();
   const dispatchGlobal = useDispatchGlobal();
 

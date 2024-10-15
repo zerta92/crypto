@@ -4,11 +4,13 @@ import { formatDate, fromSmallestUnit, convertToUsd } from "../utils";
 import "../App.css";
 import { useGlobal } from "../context/GlobalProvider.jsx";
 import CsvReader from "../csv-reader/CsvReader.jsx";
-import { useTransactions } from "../hooks/useTransactions.jsx";
 import { useAlphavantage } from "../hooks/useAlphavantage";
+import { useTransactionContext } from "../context/TransactionContext.tsx";
 
-function Transactions({ account, cryptoTransactions }) {
-  const { currency, rate, symbol } = useGlobal();
+function Transactions() {
+  const { transactions, closeTrade } = useTransactionContext();
+  const { currency, rate, symbol, account } = useGlobal();
+
   const datePickerRef = useRef(null);
   const [selectedDate, setSelectedDate] = useState("");
   const [dateError, setDateError] = useState(false);
@@ -17,11 +19,6 @@ function Transactions({ account, cryptoTransactions }) {
   const [showDatePicker, setShowDatePicker] = useState(-1);
 
   const { getCoinRate } = useAlphavantage();
-
-  const { closeTrade, transactions } = useTransactions(
-    account,
-    cryptoTransactions
-  );
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -187,7 +184,6 @@ function Transactions({ account, cryptoTransactions }) {
                         <></>
                       )}
                       {/* Close Trade Button */}
-
                       {account === transaction.user ? (
                         !+transaction.closeDate ? (
                           <button
@@ -210,10 +206,7 @@ function Transactions({ account, cryptoTransactions }) {
                 </div>
               );
             })}
-            <CsvReader
-              account={account}
-              cryptoTransactions={cryptoTransactions}
-            ></CsvReader>
+            <CsvReader account={account}></CsvReader>
           </div>
         </main>
       </div>

@@ -2,16 +2,17 @@ import React, { useEffect, useState } from "react";
 import { formatDate, fromSmallestUnit } from "./utils";
 import "./App.css";
 import { useGlobal } from "./context/GlobalProvider.jsx";
-import { useTransactions } from "./hooks/useTransactions.jsx";
-import { useAlphavantage } from "./hooks/useAlphavantage";
 
-function AccountSummary({ account, cryptoTransactions }) {
+import { useAlphavantage } from "./hooks/useAlphavantage";
+import { useTransactionContext } from "./context/TransactionContext.tsx";
+
+function AccountSummary() {
   const { rate, symbol } = useGlobal();
   const [totalProfit, setTotalProfit] = useState(0);
   const [totalInvested, setTotalInvested] = useState(0);
   const [totalProfitPercent, setTotalProfitPercent] = useState(0);
   const { ethRate, getCoinRate } = useAlphavantage();
-  const { transactions } = useTransactions(account, cryptoTransactions);
+  const { transactions } = useTransactionContext();
 
   const calculateTotalMetrics = (transactions) => {
     const profit = transactions.reduce((a, b) => {

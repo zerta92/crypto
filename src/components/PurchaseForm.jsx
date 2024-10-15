@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useTransactions } from "./hooks/useTransactions";
 import { useGlobal } from "./context/GlobalProvider.jsx";
 import { convertToUsd, toSmallestUnit } from "./utils.js";
 import { useAlphavantage } from "./hooks/useAlphavantage.jsx";
-const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
+import { useTransactionContext } from "./context/TransactionContext.tsx";
+const PurchaseForm = ({ handleModalClose }) => {
   const { currency, rate, symbol } = useGlobal();
-  const { createTransactions } = useTransactions(account, cryptoTransactions);
+  const { createTransactions, error, errorMessage } = useTransactionContext();
   const { getCoinRate, ethRate } = useAlphavantage();
   const datePickerRef = useRef(null);
 
@@ -118,6 +118,7 @@ const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
           }}
         />
       </div>
+      {error && <p style={{ color: "red" }}>{errorMessage}</p>}
 
       <button type="submit" className="btn btn-primary">
         Log Transaction

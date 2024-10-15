@@ -6,6 +6,7 @@ export function useTransactions(account, cryptoTransactions) {
 
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   useEffect(() => {
     if (cryptoTransactions) {
@@ -61,33 +62,32 @@ export function useTransactions(account, cryptoTransactions) {
   }
 
   function createTransaction(transactions) {
-    // const gasLimit = 2000000;
-
     return new Promise((resolve, reject) => {
-      try {
-        cryptoTransactions.methods
-          .createTransactions(transactions)
-          .send({
-            from: account,
-            // gas: gasLimit, // Set the gas limit
-            // gasPrice: window.web3.utils.toWei("11", "gwei"),
-          })
-          .on("confirmation", function (confirmationNumber, receipt) {})
-          .on("receipt", async (receipt) => {
-            setLoading(false);
-            resolve();
-          })
-          .on("error", function (error) {
-            console.log("error");
-            setLoading(false);
-            setError(true);
-            resolve();
-          });
-      } catch (err) {
-        console.log(err);
-        setLoading(false);
-        setError(true);
-      }
+      // const gasLimit = 2000000;
+      cryptoTransactions.methods
+        .createTransactions(transactions)
+        .send({
+          from: account,
+          // gas: gasLimit, // Set the gas limit
+          // gasPrice: window.web3.utils.toWei("11", "gwei"),
+        })
+        .on("confirmation", function (confirmationNumber, receipt) {})
+        .on("receipt", async (receipt) => {
+          setLoading(false);
+          setError(false);
+          resolve();
+        })
+        .on("error", function (error) {
+          setLoading(false);
+          setError(true);
+          resolve();
+        })
+        .catch((err) => {
+          setLoading(false);
+          setError(true);
+          setErrorMessage(err?.message ?? "There was an error");
+          resolve();
+        });
     });
   }
 
@@ -116,5 +116,7 @@ export function useTransactions(account, cryptoTransactions) {
     transactionsError: error,
     createTransactions,
     closeTrade,
+    errorMessage,
+    error,
   };
 }
