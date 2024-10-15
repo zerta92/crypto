@@ -8,7 +8,7 @@ export function useTransactions(account, cryptoTransactions) {
   const [error, setError] = React.useState(false);
 
   useEffect(() => {
-    if (cryptoTransactions !== null) {
+    if (cryptoTransactions) {
       loadTransactions();
       setLoading(false);
     }
@@ -47,27 +47,47 @@ export function useTransactions(account, cryptoTransactions) {
     );
   }
 
-  function createTransaction({ type, amount, transactionDate, rate }) {
-    const rateToUse = rate;
-    if (!rate) {
-      throw new Error("Crypto rate missing");
-    }
+  async function createTransactions(transactions) {
     setLoading(true);
+
+    const formattedTransactions = transactions.map((transaction) => {
+      const { type, amount, transactionDate, rate } = transaction;
+      return [type, amount, transactionDate, parseInt(rate)];
+    });
+
+    await createTransaction(formattedTransactions);
+    setLoading(false);
+    await loadTransactions();
+  }
+
+  function createTransaction(transactions) {
+    // const gasLimit = 2000000;
+
     return new Promise((resolve, reject) => {
-      cryptoTransactions.methods
-        .createTransaction(type, amount, transactionDate, parseInt(rateToUse))
-        .send({ from: account })
-        .on("confirmation", function (confirmationNumber, receipt) {})
-        .on("receipt", async (receipt) => {
-          await loadTransactions();
-          setLoading(false);
-          resolve();
-        })
-        .on("error", function (error) {
-          setLoading(false);
-          setError(true);
-          resolve();
-        });
+      try {
+        cryptoTransactions.methods
+          .createTransactions(transactions)
+          .send({
+            from: account,
+            // gas: gasLimit, // Set the gas limit
+            // gasPrice: window.web3.utils.toWei("11", "gwei"),
+          })
+          .on("confirmation", function (confirmationNumber, receipt) {})
+          .on("receipt", async (receipt) => {
+            setLoading(false);
+            resolve();
+          })
+          .on("error", function (error) {
+            console.log("error");
+            setLoading(false);
+            setError(true);
+            resolve();
+          });
+      } catch (err) {
+        console.log(err);
+        setLoading(false);
+        setError(true);
+      }
     });
   }
 
@@ -80,7 +100,6 @@ export function useTransactions(account, cryptoTransactions) {
       .on("confirmation", function (confirmationNumber, receipt) {})
       .on("receipt", async (receipt) => {
         await loadTransactions();
-
         setLoading(false);
       })
       .on("error", function (error) {
@@ -95,7 +114,7 @@ export function useTransactions(account, cryptoTransactions) {
     transactions,
     transactionsLoading: loading,
     transactionsError: error,
-    createTransaction,
+    createTransactions,
     closeTrade,
   };
 }

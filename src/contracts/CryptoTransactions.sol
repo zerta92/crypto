@@ -1,4 +1,5 @@
-pragma solidity >=0.4.21 <0.6.0;
+pragma solidity ^0.8.0;
+// pragma experimental ABIEncoderV2;
 
 contract CryptoTransactions {
     string public name;
@@ -16,6 +17,13 @@ contract CryptoTransactions {
         uint closeDate;
         uint closeRate;
         bool deleted;
+    }
+
+    struct TransactionInput {
+        string _type;
+        uint _amount;
+        uint _transactionDate;
+        uint _rate;
     }
 
     event TransactionCreated(
@@ -42,6 +50,41 @@ contract CryptoTransactions {
         name = "CryptoTransactions";
     }
 
+    function createTransactions(
+        TransactionInput[] memory _transactions
+    ) public {
+        // Loop through the array of structs and create transactions
+        for (uint i = 0; i < _transactions.length; i++) {
+            require(
+                _transactions[i]._amount > 0 &&
+                    bytes(_transactions[i]._type).length > 0,
+                "Amount and type cannot be empty"
+            );
+
+            transactionsCount++;
+            transactions[transactionsCount] = TransactionValues(
+                transactionsCount,
+                _transactions[i]._type,
+                _transactions[i]._amount,
+                payable(msg.sender),
+                _transactions[i]._transactionDate,
+                _transactions[i]._rate,
+                0,
+                0,
+                false
+            );
+
+            emit TransactionCreated(
+                transactionsCount,
+                _transactions[i]._type,
+                _transactions[i]._amount,
+                payable(msg.sender),
+                _transactions[i]._transactionDate,
+                _transactions[i]._rate
+            );
+        }
+    }
+
     function createTransaction(
         string memory _type,
         uint _amount,
@@ -57,7 +100,7 @@ contract CryptoTransactions {
             transactionsCount,
             _type,
             _amount,
-            msg.sender,
+            payable(msg.sender),
             _transactionDate,
             _rate,
             0,
@@ -68,7 +111,7 @@ contract CryptoTransactions {
             transactionsCount,
             _type,
             _amount,
-            msg.sender,
+            payable(msg.sender),
             _transactionDate,
             _rate
         );
@@ -101,7 +144,7 @@ contract CryptoTransactions {
             transactionsCount,
             _type,
             _amount,
-            msg.sender,
+            payable(msg.sender),
             _transactionDate,
             _closeDate,
             _rate,

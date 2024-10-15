@@ -3,6 +3,7 @@ import Identicon from "identicon.js";
 import { formatDate, fromSmallestUnit, convertToUsd } from "../utils";
 import "../App.css";
 import { useGlobal } from "../context/GlobalProvider.jsx";
+import CsvReader from "../csv-reader/CsvReader.jsx";
 import { useTransactions } from "../hooks/useTransactions.jsx";
 import { useAlphavantage } from "../hooks/useAlphavantage";
 
@@ -117,7 +118,6 @@ function Transactions({ account, cryptoTransactions }) {
                       ) : (
                         <></>
                       )}
-
                       {/* Datepicker */}
                       {showDatePicker === key ? (
                         <div className="mt-5 p-4 bg-light rounded shadow-sm">
@@ -186,8 +186,8 @@ function Transactions({ account, cryptoTransactions }) {
                       ) : (
                         <></>
                       )}
-
                       {/* Close Trade Button */}
+
                       {account === transaction.user ? (
                         !+transaction.closeDate ? (
                           <button
@@ -210,6 +210,10 @@ function Transactions({ account, cryptoTransactions }) {
                 </div>
               );
             })}
+            <CsvReader
+              account={account}
+              cryptoTransactions={cryptoTransactions}
+            ></CsvReader>
           </div>
         </main>
       </div>

@@ -5,7 +5,7 @@ import { convertToUsd, toSmallestUnit } from "./utils.js";
 import { useAlphavantage } from "./hooks/useAlphavantage.jsx";
 const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
   const { currency, rate, symbol } = useGlobal();
-  const { createTransaction } = useTransactions(account, cryptoTransactions);
+  const { createTransactions } = useTransactions(account, cryptoTransactions);
   const { getCoinRate, ethRate } = useAlphavantage();
   const datePickerRef = useRef(null);
 
@@ -33,12 +33,14 @@ const PurchaseForm = ({ account, cryptoTransactions, handleModalClose }) => {
 
         const usedRateUSD = convertToUsd(purchaseRate, rate);
 
-        await createTransaction({
-          type,
-          amount,
-          transactionDate: dateValue.getTime(),
-          rate: usedRateUSD,
-        });
+        await createTransactions([
+          {
+            type,
+            amount,
+            transactionDate: dateValue.getTime(),
+            rate: usedRateUSD,
+          },
+        ]);
 
         handleModalClose();
       }}

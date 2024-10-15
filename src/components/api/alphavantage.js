@@ -3,9 +3,6 @@ const API_KEY = "R6ZSU4QDSJ052XQN";
 
 //cache data and reset cache every 6 hours
 export async function getDailyCryptoData({ fromSymbol, toSymbol }) {
-  console.log("here 2");
-
-  return;
   //https://www.alphavantage.co/query?function=${asset}&symbol=${fromSymbol}&market=${toSymbol}&outputsize=full&apikey=${API_KEY}
   //https://www.alphavantage.co/query?function=${asset}&from_symbol=${fromSymbol}&to_symbol=${toSymbol}&interval=${interval}&outputsize=full&apikey=${API_KEY}
   // https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={}&to_currency={}&apikey={}
