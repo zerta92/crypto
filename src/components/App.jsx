@@ -16,6 +16,7 @@ import { TransactionProvider } from "./context/TransactionContext.tsx";
 function App() {
   const [modalOpen, setOpen] = React.useState(false);
   const [account, setAccount] = React.useState("");
+  const [networkId, setNetworkId] = React.useState("");
   const [socialNetwork, setSocialNetwork] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
@@ -65,6 +66,7 @@ function App() {
   async function getNetworkId(web3) {
     try {
       const networkId = await web3.eth.net.getId();
+      setNetworkId(networkId);
       console.log("Network ID:", networkId);
       return networkId;
     } catch (error) {
@@ -140,7 +142,7 @@ function App() {
   return (
     <div>
       <GlobalProvider account={account}>
-        <TransactionProvider web3={window.web3}>
+        <TransactionProvider web3={window.web3} networkId={networkId}>
           <Navbar handleModalOpen={handleOpen} handleModalClose={handleClose} />
           {loading ? (
             <div id="loader" className="text-center mt-5">

@@ -16,15 +16,15 @@ interface Transaction {
 }
 const TransactionContext = createContext(null);
 
-export const TransactionProvider = ({ children, web3 }) => {
+export const TransactionProvider = ({ children, web3, networkId }) => {
   const { account } = useGlobal();
-
-  const CryptoTransactionsNetworkData = CryptoTransactions.networks[5777]; //todo: get network
 
   const [cryptoTransactions, setCryptoTransactions] = React.useState(null);
 
   useEffect(() => {
-    if (web3?.eth) {
+    if (web3?.eth && networkId) {
+      const CryptoTransactionsNetworkData =
+        CryptoTransactions.networks[networkId];
       const cryptoTransactionsContract = new web3.eth.Contract(
         CryptoTransactions.abi,
         CryptoTransactionsNetworkData.address
@@ -32,7 +32,7 @@ export const TransactionProvider = ({ children, web3 }) => {
 
       setCryptoTransactions(cryptoTransactionsContract);
     }
-  }, [web3]);
+  }, [web3, networkId]);
 
   const {
     closeTrade,
